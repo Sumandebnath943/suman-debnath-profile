@@ -6,8 +6,9 @@
  *      arrival  once, about a second after the page opens
  *      event    a moment worth a ping (a role picked, a fit check run, a move towards contact), 5 at most
  *      end      the whole visit, when the tab is hidden or closed
- * 2. Google Analytics 4, only once GA_ID below is filled in. Consent Mode keeps it cookieless for visitors
- *    in the EEA, the UK and Switzerland.
+ * 2. Google Analytics 4, through the Google tag GA gave us (GOOGLE_TAG below). Consent Mode keeps it
+ *    cookieless for visitors in the EEA, the UK and Switzerland. It loads after the page has finished
+ *    loading, so it never slows the first screen.
  *
  * Both stay off for anyone who opens the page once with ?notrack=1 (undo with ?notrack=0), off everywhere
  * except the live address, and off on localhost unless localStorage "cm_beacon_debug" is "1".
@@ -17,7 +18,9 @@
   'use strict';
 
   const LIVE_HOST = 'hire.sumandebnath.houseofnamus.com';
-  const GA_ID = ''; // The GA4 measurement ID, like 'G-XXXXXXXXXX'. Empty means GA4 is off.
+  // The Google tag from GA4 → Admin → Data streams → "View tag instructions". This container carries the
+  // measurement ID G-587PHW90GB. A plain 'G-…' ID works here too. Empty means analytics is off.
+  const GOOGLE_TAG = 'GTM-WTVVGQ3N';
   const OPT_OUT_KEY = 'cm_beacon_off';
   const DEBUG_KEY = 'cm_beacon_debug';
 
@@ -41,21 +44,29 @@
   if (optedOut || (location.hostname !== LIVE_HOST && !debug)) return;
 
   /* ───────── Google Analytics 4 ───────── */
-  if (/^G-[A-Z0-9]{4,20}$/.test(GA_ID)) {
+  if (/^(G|GTM)-[A-Z0-9]{4,20}$/.test(GOOGLE_TAG)) {
     window.dataLayer = window.dataLayer || [];
     const gtag = function () { window.dataLayer.push(arguments); };
     window.gtag = gtag;
+    // Consent first, before the tag loads. Ads are never on.
     const ask = { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' };
     gtag('consent', 'default', Object.assign({ analytics_storage: 'granted' }, ask));
     // Where the law asks for consent first, GA4 sends cookieless pings only.
     gtag('consent', 'default', Object.assign({ analytics_storage: 'denied', region: ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH'] }, ask));
     gtag('js', new Date());
-    gtag('config', GA_ID);
-    const s = document.createElement('script');
-    s.async = true;
-    s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
-    document.head.appendChild(s);
+    // A container ('GTM-…') carries its own configuration; a bare measurement ID needs it here.
+    const container = GOOGLE_TAG.startsWith('GTM-');
+    if (!container) gtag('config', GOOGLE_TAG);
     window.addEventListener('cm:track', (e) => { const d = e.detail || {}; if (d.kind) gtag('event', `cm_${d.kind}`, { label: String(d.label || '').slice(0, 100) }); });
+    const load = () => {
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = container ? `https://www.googletagmanager.com/gtm.js?id=${GOOGLE_TAG}` : `https://www.googletagmanager.com/gtag/js?id=${GOOGLE_TAG}`;
+      document.head.appendChild(s);
+    };
+    // After the page and the game have loaded, in a quiet moment.
+    const idle = () => ('requestIdleCallback' in window ? window.requestIdleCallback(load, { timeout: 3000 }) : setTimeout(load, 1500));
+    if (document.readyState === 'complete') idle(); else window.addEventListener('load', idle, { once: true });
   }
 
   /* ───────── the visitor beacon ───────── */

@@ -46,7 +46,7 @@ Settings live in the bot's own short description ("🎮 Career Mode alerts · bo
 
 | File | Job |
 | --- | --- |
-| `js/beacon.js` | Browser side. A visit is one tab (sessionStorage). Passive listeners; `sendBeacon` when the tab is hidden or closed. Also loads GA4 once `GA_ID` is set. Off on every host but the live one, and for anyone who opened `?notrack=1` |
+| `js/beacon.js` | Browser side. A visit is one tab (sessionStorage). Passive listeners; `sendBeacon` when the tab is hidden or closed. Also loads the GA4 Google tag (`GOOGLE_TAG`, container GTM-WTVVGQ3N carrying G-587PHW90GB) after the page has loaded. Off on every host but the live one, and for anyone who opened `?notrack=1` |
 | `js/ui.js` | Reports the moments (`cm:track` events): a role picked, the fit check, windows opened, contact moves |
 | `api/beacon.js` | Collector: validates, locates (Vercel headers, then ipwho.is), scores human vs bot, applies settings and rate limits, formats, sends. Always answers 204. `GET` is a health check |
 | `middleware.js` + `api/_lib/crawler-alert.js` | Crawler alerts from every page request, sent in `waitUntil` so pages never wait. Fake Googlebots are caught with reverse DNS over HTTPS |
