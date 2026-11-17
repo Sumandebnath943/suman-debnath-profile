@@ -1,0 +1,12 @@
+{
+  "name": "career-mode",
+  "private": true,
+  "description": "Suman Debnath: Career Mode. A static page with two Vercel functions and a middleware for visitor alerts. There is no build step and no dependency.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "llms": "node scripts/llms-full.mjs",
+    "indexnow": "node scripts/indexnow.mjs",
+    "telegram:setup": "node scripts/telegram-setup.mjs"
+  }
+}

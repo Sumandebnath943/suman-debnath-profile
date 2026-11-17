@@ -2,9 +2,9 @@
 
 > Suman Debnath is a Senior Brand Marketing Manager in Pune, India, with 9+ years in brand and digital marketing. Since 2024 he has also built and shipped 26+ AI products on his own, including MIGI (46 autonomous agents) and PentaCMD-47M (a language model trained from scratch). He is looking for senior brand marketing, product marketing, AI product marketing and AI product management roles, remote or with relocation.
 
-This file describes https://hire.sumandebnath.houseofnamus.com/, "Career Mode": a one-page résumé you walk through as a small pixel-art game. Everything below is also stated in plain HTML on that page; no JavaScript is needed to read it. The full portfolio, with case studies and a notebook, is https://sumandebnath.houseofnamus.com/ and its own file is https://sumandebnath.houseofnamus.com/llms.txt.
+This file describes https://hire.sumandebnath.houseofnamus.com/, "Career Mode": a one-page résumé you walk through as a small pixel-art game. Everything below is also stated in plain HTML on that page; no JavaScript is needed to read it. The full portfolio, with case studies and a notebook, is https://sumandebnath.houseofnamus.com/ and its own file is https://sumandebnath.houseofnamus.com/llms.txt. The complete story of this page, every stop in reading order, is https://hire.sumandebnath.houseofnamus.com/llms-full.txt.
 
-Last updated: 2026-11-17.
+Last updated: 2026-11-18.
 
 ## Which Suman Debnath this is
 

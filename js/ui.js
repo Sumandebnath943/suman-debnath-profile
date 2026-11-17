@@ -6,6 +6,9 @@ const enc = encodeURIComponent;
 const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const EMAIL = ($('meta[name="contact-email"]') || {}).content || '';
 const store = { get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* private mode */ } } };
+// Tells the visit beacon (js/beacon.js) about a moment worth knowing. Nothing is sent from here.
+const track = (kind, label) => { try { window.dispatchEvent(new CustomEvent('cm:track', { detail: { kind, label } })); } catch (e) { /* never break the page */ } };
+const smallScreen = window.matchMedia('(max-width: 820px), (max-aspect-ratio: 5/6)');
 
 /* ───────── who is reading ───────── */
 const WHO = {
@@ -19,10 +22,11 @@ let who = store.get('cm:who') || '';
 const setWho = (w) => {
   who = w; store.set('cm:who', w);
   $$('[data-who]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.who === w)));
-  if (WHO[w]) $('#who-line').textContent = WHO[w];
+  // Phones walk by swiping and have no Next button, so the line drops the part about it.
+  if (WHO[w]) $('#who-line').textContent = smallScreen.matches ? WHO[w].replace(/, and Next will skip to (them|it)\./, '.') : WHO[w];
   window.dispatchEvent(new CustomEvent('cm:who', { detail: w }));   // the game marks the beats for this reader
 };
-$$('[data-who]').forEach((b) => b.addEventListener('click', () => setWho(b.dataset.who)));
+$$('[data-who]').forEach((b) => b.addEventListener('click', () => { setWho(b.dataset.who); track('role', `Said they are here as ${ROLE_NAME[b.dataset.who] || b.dataset.who}`); }));
 if (WHO[who]) setWho(who);
 
 /* ───────── the pre-written email ───────── */
@@ -55,7 +59,7 @@ function openCompose(key, extra = '') {
 const copy = async (text, btn, done) => {
   try { await navigator.clipboard.writeText(text); const old = btn.textContent; btn.textContent = done; setTimeout(() => { btn.textContent = old; }, 1800); } catch (e) { btn.textContent = 'Copying is blocked here'; }
 };
-$('#copy-message').addEventListener('click', (e) => copy(`To: ${EMAIL}\nSubject: ${subj.value}\n\n${body.value}`, e.currentTarget, 'Copied'));
+$('#copy-message').addEventListener('click', (e) => { copy(`To: ${EMAIL}\nSubject: ${subj.value}\n\n${body.value}`, e.currentTarget, 'Copied'); track('contact', 'Copied the pre-written email'); });
 
 /* ───────── the fit check: all of it runs in the visitor's browser ───────── */
 const EVIDENCE = [
@@ -98,8 +102,9 @@ function runFit() {
     + '<p class="dim">This is keyword matching, not a judgement. A 20-minute call will tell you more.</p><p class="cta-row"><button class="btn btn-gold px" type="button" id="fit-mail">Email Suman about this role</button></p>';
   $('#fit-mail').addEventListener('click', () => { dlg('fit').close(); openCompose(null); });
 }
-$('#fit-run').addEventListener('click', runFit);
-$('#fit-sample').addEventListener('click', () => { $('#fit-input').value = SAMPLE; runFit(); });
+// The beacon hears that the fit check ran, never what was pasted into it.
+$('#fit-run').addEventListener('click', () => { runFit(); track('fit', 'Ran the fit check on their own job description'); });
+$('#fit-sample').addEventListener('click', () => { $('#fit-input').value = SAMPLE; runFit(); track('fit', 'Tried the fit check with the sample job'); });
 
 /* ───────── question pack and cost calculator ───────── */
 $('#pack-copy').addEventListener('click', (e) => copy($$('#pack-list .q').map((q, i) => `${i + 1}. ${q.textContent}`).join('\n'), e.currentTarget, 'Copied'));
@@ -140,10 +145,23 @@ function buildSummary() {
   return plainText;
 }
 let summaryText = '';
-$('#summary-copy').addEventListener('click', (e) => copy(summaryText, e.currentTarget, 'Copied'));
-$('#summary-print').addEventListener('click', () => window.print());
+$('#summary-copy').addEventListener('click', (e) => { copy(summaryText, e.currentTarget, 'Copied'); track('contact', "Copied MIGI's evidence summary"); });
+$('#summary-print').addEventListener('click', () => { track('contact', "Printed MIGI's evidence summary"); window.print(); });
+$('#summary-share').addEventListener('click', () => track('contact', "Emailed MIGI's evidence summary to someone"));
 
 /* ───────── opening and closing windows ───────── */
+// What each window means to the visit beacon.
+const OPENED = {
+  compose: ['contact', 'Opened the pre-written email to Suman'],
+  consult: ['contact', 'Opened the email for the free 15-minute AI consult'],
+  summary: ['contact', "Opened MIGI's evidence summary"],
+  fit: ['tool', 'Opened the job fit check'],
+  pack: ['tool', 'Opened the AI-hiring questions'],
+  audit: ['tool', 'Opened the AI-visibility audit'],
+  slides: ['tool', 'Opened Slide Doctor'],
+  dpe: ['tool', 'Opened D-PE.ai prompts'],
+  calc: ['tool', 'Opened the AI cost calculator'],
+};
 document.addEventListener('click', (e) => {
   const t = e.target instanceof Element ? e.target : null;
   if (!t) return;
@@ -151,6 +169,8 @@ document.addEventListener('click', (e) => {
   if (opener) {
     const d = t.closest('dialog');
     if (d) d.close();
+    const what = OPENED[opener.dataset.compose === 'consult' ? 'consult' : opener.dataset.open];
+    if (what) track(what[0], what[1]);
     if (opener.dataset.open === 'compose') openCompose(opener.dataset.compose || null);
     else { if (opener.dataset.open === 'summary') summaryText = buildSummary(); dlg(opener.dataset.open).showModal(); }
     return;

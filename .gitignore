@@ -1,3 +1,9 @@
 # Local Claude Code settings and preview config
 .claude/
 concepts/
+
+# Local secrets for scripts/telegram-setup.mjs (never committed)
+.env
+.env.*
+!.env.example
+node_modules/
