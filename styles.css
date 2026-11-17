@@ -1,0 +1,186 @@
+/* Career Mode — preview of the opening scene */
+:root {
+  --ink: #181425;
+  --night: #1f1b33;
+  --panel: rgba(24, 20, 37, 0.95);
+  --line: #f4f4f4;
+  --text: #e9edf7;
+  --dim: #aab4cc;
+  --gold: #ffcd75;
+  --gold-d: #b9772f;
+  --coral: #ef7d57;
+  --cyan: #73eff7;
+  --b: 3px;
+  --hud: 46px;
+  --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --pixel: 'Jersey 20', 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--ink); -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ink); color: var(--text); font: 500 16px/1.55 var(--body); -webkit-font-smoothing: antialiased; }
+h1, h2, p, ul, ol { margin: 0; }
+a { color: inherit; }
+.px { font-family: var(--pixel); font-weight: 400; letter-spacing: 0.03em; line-height: 1.1; }
+
+.skip { position: fixed; left: 12px; top: -80px; z-index: 50; padding: 10px 14px; background: var(--gold); color: var(--ink); font-weight: 700; }
+.skip:focus { top: 12px; }
+
+/* ───────── top bar ───────── */
+.hud {
+  position: fixed; inset: 0 0 auto 0; z-index: 20; height: var(--hud);
+  display: flex; align-items: center; gap: 10px; padding: 0 clamp(10px, 2vw, 20px);
+  background: linear-gradient(rgba(24, 20, 37, 0.92), rgba(24, 20, 37, 0.6));
+  border-bottom: 2px solid rgba(244, 244, 244, 0.16);
+}
+.hud-brand { display: flex; align-items: baseline; gap: 10px; text-decoration: none; margin-right: auto; white-space: nowrap; }
+.hud-mark { font-size: 22px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; text-shadow: 2px 2px 0 #5d275d; }
+.hud-name { font-weight: 700; font-size: 14px; color: var(--text); }
+.hud-where { font-size: 18px; color: var(--dim); white-space: nowrap; }
+@media (max-width: 1320px) { .hud-name { display: none; } }
+@media (max-width: 1100px) { #hud-chapter { display: none; } }
+.hud-where b { display: inline-block; min-width: 3.4em; margin-left: 6px; padding: 1px 8px 2px; background: var(--gold); color: var(--ink); font-weight: 400; text-align: center; }
+.hud-coins { display: flex; align-items: center; gap: 6px; font-size: 20px; color: var(--gold); white-space: nowrap; }
+.coin-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--gold); box-shadow: inset -2px -2px 0 #e8963c, 0 0 0 2px #8a4b1c; }
+.hud-btn {
+  appearance: none; border: 2px solid rgba(244, 244, 244, 0.5); background: rgba(24, 20, 37, 0.7); color: var(--text);
+  font-size: 17px; padding: 4px 9px 5px; cursor: pointer; text-decoration: none; white-space: nowrap;
+}
+.hud-btn:hover, .hud-btn:focus-visible { border-color: var(--gold); color: var(--gold); outline: none; }
+.hud-btn[aria-pressed='true'] { border-color: var(--cyan); color: var(--cyan); }
+.hud-cta { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.hud-cta:hover, .hud-cta:focus-visible { background: #ffe08a; color: var(--ink); }
+.short { display: none; }
+
+/* ───────── the stage: one screen that stays put while you scroll ───────── */
+.world { position: relative; }
+.stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--ink); }
+.scene-wrap { position: absolute; inset: 0; overflow: hidden; }
+#scene { position: absolute; left: 0; top: 0; display: block; image-rendering: pixelated; image-rendering: crisp-edges; touch-action: pan-y; cursor: pointer; }
+
+.controls {
+  position: absolute; right: 14px; bottom: 12px; max-width: min(46ch, 60vw); padding: 5px 10px 6px;
+  background: rgba(24, 20, 37, 0.78); color: var(--text); font-size: 17px; text-align: right;
+  transition: opacity 0.5s; pointer-events: none;
+}
+.controls.is-gone { opacity: 0; }
+
+.tip {
+  position: absolute; z-index: 5; max-width: 250px; padding: 8px 11px 9px; background: var(--line); color: var(--ink);
+  font-size: 14px; font-weight: 600; line-height: 1.35; box-shadow: 0 0 0 3px var(--ink), 5px 5px 0 3px rgba(0, 0, 0, 0.35);
+  opacity: 0; transform: translateY(6px); transition: opacity 0.18s, transform 0.18s; pointer-events: none;
+}
+.tip.is-on { opacity: 1; transform: none; }
+.tip b { display: block; font: 400 16px/1 var(--pixel); letter-spacing: 0.04em; color: #2b3a78; margin-bottom: 4px; }
+
+/* ───────── story panel ───────── */
+/* The panel is only as tall as the beat on screen, and narrow enough to leave the scenery free. */
+.panel {
+  position: absolute; z-index: 4; top: calc(var(--hud) + 14px); left: clamp(10px, 2.2vw, 36px);
+  width: clamp(290px, 28vw, 400px); display: flex; flex-direction: column; gap: 10px;
+  max-height: calc(100vh - var(--hud) - 28px); max-height: calc(100svh - var(--hud) - 28px);
+  filter: drop-shadow(5px 5px 0 rgba(0, 0, 0, 0.35));
+}
+.win {
+  background:
+    linear-gradient(var(--line), var(--line)) var(--b) var(--b) / var(--b) var(--b) no-repeat,
+    linear-gradient(var(--line), var(--line)) calc(100% - var(--b)) var(--b) / var(--b) var(--b) no-repeat,
+    linear-gradient(var(--line), var(--line)) var(--b) calc(100% - var(--b)) / var(--b) var(--b) no-repeat,
+    linear-gradient(var(--line), var(--line)) calc(100% - var(--b)) calc(100% - var(--b)) / var(--b) var(--b) no-repeat,
+    var(--panel);
+  box-shadow: inset 0 0 0 var(--b) var(--line);
+  clip-path: polygon(var(--b) 0, calc(100% - var(--b)) 0, calc(100% - var(--b)) var(--b), 100% var(--b), 100% calc(100% - var(--b)), calc(100% - var(--b)) calc(100% - var(--b)), calc(100% - var(--b)) 100%, var(--b) 100%, var(--b) calc(100% - var(--b)), 0 calc(100% - var(--b)), 0 var(--b), var(--b) var(--b));
+}
+.beat { position: relative; flex: 0 1 auto; min-height: 0; align-content: start; padding: 14px 16px 15px; display: grid; gap: 8px; overflow-y: auto; scrollbar-width: thin; }
+/* Only the active beat takes up room; the others sit on top of it while they fade. */
+.js .beat { position: absolute; top: 0; left: 0; right: 0; visibility: hidden; opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s, visibility 0s 0.2s; }
+.js .beat.is-active { position: relative; visibility: visible; opacity: 1; transform: none; transition: opacity 0.22s 0.05s, transform 0.22s 0.05s; }
+
+.beat-tag { font-size: 17px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; }
+.logo { display: block; width: min(100%, 372px); height: auto; image-rendering: pixelated; image-rendering: crisp-edges; margin: 2px 0 -2px -3px; }
+.beat h1 { font: 800 clamp(28px, 2.7vw, 38px)/1.05 var(--body); letter-spacing: -0.02em; color: #fff; }
+.beat h2 { font: 800 clamp(18px, 1.45vw, 21px)/1.22 var(--body); letter-spacing: -0.01em; color: #fff; text-wrap: balance; }
+.beat p, .beat li { font-size: clamp(14px, 1vw, 15px); line-height: 1.5; color: var(--text); }
+.beat b { color: var(--gold); font-weight: 700; }
+.lead { font-size: clamp(15px, 1.1vw, 16.5px) !important; }
+.facts { list-style: none; padding: 0; display: grid; gap: 6px; }
+.facts li { position: relative; padding-left: 18px; }
+.facts li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 8px; height: 8px; background: var(--gold); box-shadow: 2px 2px 0 var(--gold-d); }
+
+.migi {
+  display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 9px; align-items: start;
+  margin-top: 1px; padding: 7px 10px 8px 9px; background: rgba(115, 239, 247, 0.09); border-left: 3px solid var(--cyan);
+  font-size: clamp(13.5px, 0.95vw, 14.5px) !important; line-height: 1.45 !important; color: #d6f7fb !important;
+}
+.migi::before { content: ''; grid-row: 1 / span 2; width: 28px; height: 36px; background: var(--migi-face, none) center / contain no-repeat; image-rendering: pixelated; }
+.migi-who { display: block; font-size: 16px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+
+.beat-nav { flex: none; display: flex; align-items: center; gap: 10px; }
+.count-row { display: flex; align-items: center; gap: 6px; }
+.mini { appearance: none; cursor: pointer; font-size: 15px; padding: 0 6px 1px; background: rgba(24, 20, 37, 0.8); color: var(--cyan); border: 0; text-decoration: underline; text-underline-offset: 2px; }
+.mini:hover, .mini:focus-visible { color: var(--gold); outline: none; }
+/* "Hide text": only the chapter buttons stay, and the whole scene is free. */
+.js.story-min .beat { display: none; }
+.pips { list-style: none; padding: 0; margin: 0 auto; display: flex; gap: 6px; }
+.pips button { display: block; width: 14px; height: 14px; padding: 0; border: 2px solid var(--line); background: rgba(24, 20, 37, 0.85); cursor: pointer; }
+.pips button[aria-current='true'] { background: var(--gold); border-color: var(--gold); }
+.pips button.is-done { background: var(--line); }
+.pips button:hover, .pips button:focus-visible { border-color: var(--cyan); outline: none; }
+
+.btn {
+  appearance: none; border: 0; cursor: pointer; font-size: 21px; padding: 7px 16px 9px; white-space: nowrap; text-decoration: none;
+  transition: transform 0.06s, box-shadow 0.06s;
+}
+.btn-gold { background: var(--gold); color: var(--ink); box-shadow: 0 0 0 3px var(--ink), 0 4px 0 3px var(--gold-d); }
+.btn-ghost { background: rgba(24, 20, 37, 0.92); color: var(--text); box-shadow: 0 0 0 3px var(--line), 0 4px 0 3px rgba(0, 0, 0, 0.5); }
+.btn:hover, .btn:focus-visible { filter: brightness(1.08); outline: none; }
+.btn:active { transform: translateY(3px); box-shadow: 0 0 0 3px var(--ink), 0 1px 0 3px var(--gold-d); }
+.btn[disabled] { opacity: 0.4; cursor: default; }
+
+.footer { padding: 28px clamp(16px, 4vw, 48px) 40px; color: var(--dim); font-size: 14px; display: grid; gap: 6px; background: var(--ink); border-top: 2px solid rgba(244, 244, 244, 0.14); }
+
+/* ───────── phones and narrow windows: scene on top, story below ───────── */
+@media (max-width: 820px), (max-aspect-ratio: 5/6) {
+  :root { --hud: 40px; }
+  .hud { gap: 6px; padding: 0 8px; }
+  .hud-name, #hud-chapter, #sound, .long { display: none; }
+  .short { display: inline; }
+  .hud-where b { margin-left: 0; min-width: 0; padding: 1px 6px 2px; }
+  .hud-where { font-size: 17px; }
+  .hud-mark { font-size: 17px; letter-spacing: 0.04em; }
+  .hud-coins { font-size: 17px; gap: 4px; }
+  .coin-dot { width: 10px; height: 10px; }
+  .hud-btn { font-size: 15px; padding: 3px 6px 4px; }
+  .stage { display: flex; flex-direction: column; }
+  /* The scene gets more than half the screen; the story scrolls inside its own box below. */
+  .scene-wrap { position: relative; inset: auto; flex: 0 0 55svh; }
+  .controls { display: none; }
+  .panel {
+    position: relative; top: auto; left: auto; width: auto; flex: 1 1 auto; min-height: 0; max-height: none; overflow: hidden;
+    padding: 8px 8px 10px; gap: 8px; filter: none; border-top: 3px solid var(--line); background: var(--ink);
+  }
+  .js .beat.is-active { flex: 1 1 auto; }
+  .beat { padding: 10px 12px 11px; gap: 6px; }
+  .beat-tag { font-size: 15px; }
+  .beat h1 { font-size: 26px; }
+  .beat h2 { font-size: 17px; }
+  .beat p, .beat li { font-size: 14px; line-height: 1.45; }
+  .lead { font-size: 15px !important; }
+  .migi { font-size: 13px !important; padding: 6px 9px 7px 8px; grid-template-columns: 24px minmax(0, 1fr); column-gap: 8px; }
+  .migi::before { width: 24px; height: 31px; }
+  .migi-who { font-size: 14px; }
+  .logo { width: min(100%, 280px); }
+  .btn { font-size: 18px; padding: 5px 12px 7px; }
+  .js.story-min .scene-wrap { flex: 1 1 auto; }
+  .js.story-min .panel { flex: none; }
+}
+
+/* ───────── without JavaScript the page is simply the story, top to bottom ───────── */
+.no-js .stage { position: static; height: auto; overflow: visible; }
+.no-js .scene-wrap, .no-js .beat-nav, .no-js .logo { display: none; }
+.no-js .panel { position: static; width: auto; max-width: 720px; margin: 70px auto 30px; padding: 0 16px; display: block; filter: none; }
+.no-js .beat { margin-bottom: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .beat, .js .beat.is-active, .tip, .controls { transition: none; }
+}
