@@ -164,6 +164,13 @@ export function pune() {
     text(x, 'FIRST JOB >', X + 5, B - 58, '#f4f4f4');
   }
 
+  { // A Puneri pati: Pune's famously blunt notice boards.
+    const X = c(1196);
+    R(x, '#4a2f18', X + 4, B - 22, 2, 22); R(x, '#4a2f18', X + 70, B - 22, 2, 22);
+    R(x, DK, X - 1, B - 43, 78, 23); R(x, '#f5eac8', X, B - 42, 76, 21); R(x, '#e3d1a5', X, B - 23, 76, 2);
+    text(x, 'NO PARKING.', X + 5, B - 40, '#b13e53'); text(x, 'NOT EVEN YOU.', X + 2, B - 31, '#262b44');
+    hot.push({ x: 1196, y: B - 43, w: 76, h: 43, say: 'A Puneri pati. Pune is famous for notice boards this blunt, and nobody takes them personally.' });
+  }
   ground(x, play.w, B, LH, r, 'city');
   autorick(x, c(-6), B + 17);
   hot.push({ x: -6, y: B - 8, w: 36, h: 26, say: 'The black and yellow autorickshaw: three wheels, and the quickest way across any Indian city.' });
@@ -212,5 +219,6 @@ export function pune() {
       cut: { x: 720, bot: B - 93, items: [{ at: 0.4, s: 'WRITTEN ROUND: CLEARED', col: '#a7f070' }, { at: 1.5, s: 'GROUP DISCUSSION: CUT', col: '#f6757a' }] },
       hired: { x: 925, bot: B - 99, items: [{ at: 0.6, s: 'PORTFOLIO ON THE TABLE', col: '#ffcd75' }, { at: 2.2, s: 'HIRED ON THE SPOT', sc: 2, col: '#a7f070' }] },
     },
+    obstacles: [{ x: 792, kind: 'slip', h: 12, say: 'The rejection slip from the group discussion, November 2017. Jump it: he did.' }],
   };
 }

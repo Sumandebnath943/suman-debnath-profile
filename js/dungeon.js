@@ -138,14 +138,21 @@ export function dungeon() {
       R(g, '#ffcf7a', sx(s.x) + 4, py + s.y + 18, 58, 8); R(g, '#e2766a', sx(s.x), py + s.y + 14, 66, 5); R(g, '#5b3f87', sx(s.x), py + s.y, 66, 14); disc(g, '#fff6c9', sx(s.x) + 46, py + s.y + 15, 5);
       R(g, '#181425', sx(s.x) + 14 + Math.round(Math.sin(t) * 3), py + s.y + 13, 5, 11); R(g, '#f4f4f4', sx(s.x) + fl * 9, py + s.y, 1, 26);
     },
+    // System windows float above the alcoves (bot is just over each arch), so the rooms stay in view.
     stations: {
-      learn: { sys: 1, x: 188, y: TOP + 6, items: [{ at: 0.3, s: 'PROMPTS', col: '#ffcd75' }, { at: 0.65, s: '> CONTEXT', col: '#73eff7' }, { at: 1, s: '> WORKFLOWS', col: '#a7f070' }, { at: 1.35, s: '> AGENTS', col: '#c9a0ff' }, { at: 1.7, s: '> PRODUCTS', col: '#f6757a' }] },
-      shipped: { sys: 1, x: 398, y: TOP + 6, items: [{ at: 0.3, n: 26, suf: '+ AI PRODUCTS', sc: 2, col: '#ffcd75' }, { at: 1.1, s: 'SHIPPED SOLO SINCE 2024', col: '#f4f4f4' }, { at: 1.8, s: '200,000+ LINES, AI-ASSISTED', col: '#73eff7' }] },
-      migi: { sys: 1, x: 608, y: TOP + 6, items: [{ at: 0.3, n: 46, suf: ' AGENTS', sc: 2, col: '#73eff7' }, { at: 1.1, n: 500, suf: '+ AUTOMATED CHECKS', col: '#f4f4f4' }, { at: 1.9, s: 'COST SO FAR: ABOUT $5', col: '#a7f070' }] },
-      models: { sys: 1, x: 818, y: TOP + 6, items: [{ at: 0.3, s: '47M PARAMETERS', sc: 2, col: '#c9a0ff' }, { at: 1.1, s: 'ABOUT 87% EXACT MATCH', col: '#f4f4f4' }, { at: 1.9, s: 'HUMANEVAL 1.2% > 42.1%', col: '#a7f070' }] },
-      trust: { sys: 1, x: 1028, y: TOP + 6, items: [{ at: 0.3, n: 38, suf: ' SECURITY TESTS', sc: 2, col: '#ffcd75' }, { at: 1.1, s: '12 MODULES, 3 AUDITS', col: '#f4f4f4' }, { at: 1.9, s: 'EVERY ANSWER CITES POLICY', col: '#73eff7' }] },
-      rules: { sys: 1, x: 1238, y: TOP + 6, items: [{ at: 0.3, s: 'FOUR RULES', sc: 2, col: '#ffcd75' }, { at: 1, s: 'EACH ONE FROM A FAILURE', col: '#f4f4f4' }] },
-      film: { sys: 1, x: 1448, y: TOP + 6, items: [{ at: 0.3, s: 'WHO AM I?', sc: 2, col: '#ffcd75' }, { at: 1, s: '5:57, MADE BY ONE PERSON', col: '#f4f4f4' }] },
+      learn: { sys: 1, x: 188, y: TOP + 6, bot: B - 59, items: [{ at: 0.3, s: 'PROMPTS > CONTEXT', col: '#ffcd75' }, { at: 0.8, s: '> WORKFLOWS > AGENTS', col: '#73eff7' }, { at: 1.3, s: '> PRODUCTS', col: '#f6757a' }] },
+      shipped: { sys: 1, x: 398, y: TOP + 6, bot: B - 59, items: [{ at: 0.3, n: 26, suf: '+ AI PRODUCTS', sc: 2, col: '#ffcd75' }, { at: 1.1, s: 'SHIPPED SOLO SINCE 2024', col: '#f4f4f4' }] },
+      migi: { sys: 1, x: 608, y: TOP + 6, bot: B - 59, items: [{ at: 0.3, n: 46, suf: ' AGENTS', sc: 2, col: '#73eff7' }, { at: 1.1, s: 'COST SO FAR: ABOUT $5', col: '#a7f070' }] },
+      models: { sys: 1, x: 818, y: TOP + 6, bot: B - 59, items: [{ at: 0.3, s: '47M PARAMETERS', sc: 2, col: '#c9a0ff' }, { at: 1.1, s: 'HUMANEVAL 1.2% > 42.1%', col: '#a7f070' }] },
+      trust: { sys: 1, x: 1028, y: TOP + 6, bot: B - 59, items: [{ at: 0.3, n: 38, suf: ' SECURITY TESTS', sc: 2, col: '#ffcd75' }, { at: 1.1, s: '12 MODULES, 3 AUDITS', col: '#f4f4f4' }] },
+      rules: { sys: 1, x: 1238, y: TOP + 6, bot: B - 59, items: [{ at: 0.3, s: 'FOUR RULES', sc: 2, col: '#ffcd75' }, { at: 1, s: 'EACH ONE FROM A FAILURE', col: '#f4f4f4' }] },
+      film: { sys: 1, x: 1448, y: TOP + 6, bot: B - 59, items: [{ at: 0.3, s: 'WHO AM I?', sc: 2, col: '#ffcd75' }, { at: 1, s: '5:57, MADE BY ONE PERSON', col: '#f4f4f4' }] },
     },
+    // Bugs from the build years, lying in the corridor.
+    obstacles: [
+      { x: 468, kind: 'grave', h: 14, say: 'A model his router depended on was retired by its provider in 2026. He rebuilt the route. Jump it.' },
+      { x: 905, kind: 'bug', h: 9, say: 'The scorer bug: it marked five solved problems as failures, so Qdex first read 39.0% instead of 42.1%. Jump it.' },
+      { x: 1110, kind: 'bot', h: 12, say: 'A fake crawler wearing OpenAI’s name, asking his sites for /.env and /.git/HEAD. It got nothing. Jump it.' },
+    ],
   };
 }

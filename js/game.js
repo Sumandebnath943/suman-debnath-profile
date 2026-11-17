@@ -15,7 +15,7 @@ const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const worldEl = $('#world'), stage = $('#stage'), wrap = $('#scene-wrap'), cv = $('#scene'), main = cv.getContext('2d');
 let ctx = main;                                         // points at the screen, or at the buffer of the scene being left
-const tipEl = $('#tip'), controls = $('#controls'), hudYear = $('#hud-year'), hudCh = $('#hud-chapter'), hudCoins = $('#hud-coins'), hudLv = $('#hud-lv');
+const tipEl = $('#tip'), hudYear = $('#hud-year'), hudCh = $('#hud-chapter'), hudCoins = $('#hud-coins'), hudLv = $('#hud-lv'), hudEv = $('#hud-ev');
 const nextBtn = $('#next'), prevBtn = $('#prev'), pipsEl = $('#pips'), countEl = $('#count'), soundBtn = $('#sound');
 
 /* ───────── the world: eight scenes, end to end ───────── */
@@ -30,7 +30,20 @@ const X0 = beats[0].x, X1 = beats[beats.length - 1].x + 40;
 const REWIND = 252, BORN = byId.dungeon.ox + byId.dungeon.born;
 const outfit = (x) => (x < REWIND ? 'adult' : x < byId.road.ox ? 'teen' : x < byId.kerala.ox ? 'student' : 'adult');
 const COINS = scenes.flatMap((s) => s.coins.map(([x, h]) => ({ x: s.ox + x, h, got: false })));
-$('#hud-coins-total').textContent = COINS.length;
+// Hurdles from the story lie on the road. A jump clears one for a bonus coin; walking into one costs a coin.
+const OBST = scenes.flatMap((s) => (s.obstacles || []).map((o) => ({ ...o, x: s.ox + o.x, done: false })));
+scenes.forEach((s) => (s.obstacles || []).forEach((o) => s.hot.push({ x: o.x - 10, y: 160 - (o.h || 4) - 8, w: 20, h: (o.h || 4) + 10, say: o.say, jump: 1 })));
+const COIN_TOTAL = COINS.length + OBST.length;
+$('#hud-coins-total').textContent = COIN_TOTAL;
+
+// MIGI's evidence log: every skill listed in a beat is logged the first time that beat is reached.
+const SKILLS = beats.map((b) => [...b.el.querySelectorAll('.skills li')].map((li) => li.textContent.trim()));
+const ALL_SKILLS = [...new Set(SKILLS.flat())];
+const logged = new Set();
+$('#hud-ev-total').textContent = ALL_SKILLS.length;
+// Who is reading: set from the chips in the first beat. MIGI marks the beats that matter to them.
+let role = '';
+const forRole = (b) => !!role && role !== 'curious' && (b.el.dataset.for || '').split(' ').includes(role);
 
 const hero = makeHero(), migi = makeMigi(), coinF = coinFrames();
 const GL = { warm: glow(26, '#ffcf7a', 0.5), warmS: glow(13, '#ffd98f', 0.55), cool: glow(13, '#9fd8ff', 0.5), cyan: glow(8, '#73eff7', 0.45), sun: glow(46, '#ffe2a0', 0.55) };
@@ -51,10 +64,12 @@ let S = 4, W = 360, H = 225, Fs = 205, RATIO = 2, anchor = 0.62, sunFrac = 0.72,
 let trackTop = 0, trackLen = 1, cam0 = 0, camX = 0, tNow = 0, active = -1, beatT = 0, variant = 'adult', level = 1;
 let tmp, wb, fade, kb = null, coinsGot = 0, quip = 0, started = 0, tipT = 0, cur = scenes[0], leaving = null, wasBorn = false;
 const P = { x: X0, v: 0, face: 1, phase: 0, jy: 0, vy: 0, ground: true, blink: 0, blinkT: 2, run: false, moving: false };
-const M = { x: X0 - 22, y: -46, face: 1, talk: 0, happy: 0 };
+const M = { x: X0 - 22, y: -46, face: 1, talk: 0, happy: 0, alert: 0 };
 // blend: how much of the scene being left is still on screen (1 → 0). snap: blend from a still frame after a long jump.
 const fx = { rewind: 0, dir: -1, blend: 0, snap: false, title: '', titleT: 0, lvl: 0, born: 0 };
 const BLEND = 1.1, TITLE = 2.2;
+const MAXV = 300;                                       // Suman's top speed, in world pixels a second: he runs, he never teleports
+let teleport = false, hintShown = false, warnT = 0;
 const keys = { l: false, r: false };
 const parts = [];
 const flown = new Set();
@@ -87,13 +102,10 @@ function resize() {
   cv.width = W; cv.height = H; cv.style.width = W * S + 'px'; cv.style.height = H * S + 'px';
   ctx.imageSmoothingEnabled = false;
   narrow = window.getComputedStyle(stage).display === 'flex';
-  Fs = H - 20; anchor = narrow ? 0.42 : 0.62; sunFrac = narrow ? 0.66 : 0.72;
-  if (!narrow) {                                        // Suman stands in the middle of the space the story panel leaves free
-    const pr = $('#panel').getBoundingClientRect().right - b.left;
-    anchor = clamp((pr + (b.width - pr) * 0.36) / b.width, 0.5, 0.64);
-  }
+  Fs = H - 20; anchor = narrow ? 0.4 : 0.44; sunFrac = narrow ? 0.66 : 0.72;   // the whole scene is free now: Suman walks a little left of centre
   hudW = Math.ceil(Math.max(0, $('#hud').getBoundingClientRect().bottom - b.top) / S) + 3;
-  RATIO = S / (narrow ? 1.9 : 3.2);
+  // Scroll pixels per world pixel. A mouse-wheel notch now moves Suman about a third of a building, not a whole one.
+  RATIO = narrow ? S * 0.9 : S * 0.78;
   trackLen = (X1 - X0) * RATIO;
   worldEl.style.height = Math.round(stage.offsetHeight + trackLen) + 'px';
   trackTop = worldEl.getBoundingClientRect().top + window.scrollY;
@@ -104,7 +116,13 @@ function resize() {
 }
 
 const beatY = (i) => trackTop + (beats[i].x - X0) * RATIO;
-const goTo = (i) => window.scrollTo({ top: beatY(clamp(i, 0, beats.length - 1)), behavior: reduced ? 'auto' : 'smooth' });
+// A neighbouring beat is walked to; a far one (a chapter button) is jumped to, behind the scene blend.
+const goTo = (i) => {
+  i = clamp(i, 0, beats.length - 1);
+  const far = Math.abs(beats[i].x - P.x) > 600;
+  if (far) teleport = true;
+  window.scrollTo({ top: beatY(i), behavior: reduced || far ? 'auto' : 'smooth' });
+};
 
 function setActive(i) {
   if (i === active) return;
@@ -115,8 +133,19 @@ function setActive(i) {
   hudYear.textContent = b.year; hudCh.textContent = b.chName;
   countEl.textContent = `${i + 1} of ${beats.length}`;
   prevBtn.disabled = i === 0;
-  nextBtn.textContent = i === 0 ? 'Start walking ▶' : i === beats.length - 1 ? 'Back to the start ↺' : 'Next ▶';
+  setNextLabel();
   M.talk = 1.6;
+  // MIGI logs the skills this beat proves.
+  const fresh = SKILLS[i].filter((s) => !logged.has(s));
+  if (fresh.length) {
+    fresh.forEach((s) => logged.add(s));
+    hudEv.textContent = logged.size;
+    if (started > 0.6) {
+      parts.push({ k: 'txt', s: `+${fresh.length} SKILL${fresh.length > 1 ? 'S' : ''}`, x: M.x - 18, y: M.y - 16, vx: 0, vy: -14, life: 1.5, max: 1.5, col: '#73eff7' });
+      const ev = hudEv.parentElement; ev.classList.remove('is-ping'); void ev.offsetWidth; ev.classList.add('is-ping');
+    }
+  }
+  if (forRole(b) && started > 0.6) { M.alert = 2.2; [880, 1175].forEach((f, k) => beep(f, 0.07, 'triangle', 0.03, 0, k * 0.08)); }
   let lv = 1;
   for (const o of beats) if (o.i <= i && o.lv > lv) lv = o.lv;
   if (lv !== level) {
@@ -124,6 +153,18 @@ function setActive(i) {
     level = lv; hudLv.textContent = lv;
   }
   if (started > 0.6) beep(660, 0.05, 'triangle', 0.03);
+}
+
+// With a reader's role set, Next skips to the next beat that matters to them.
+const nextFor = (i) => { if (!role || role === 'curious') return i + 1; for (let j = i + 1; j < beats.length; j++) if (forRole(beats[j])) return j; return beats.length - 1; };
+function setNextLabel() {
+  const i = Math.max(0, active);
+  nextBtn.textContent = i === 0 ? 'Start walking ▶' : i === beats.length - 1 ? 'Back to the start ↺' : role && role !== 'curious' ? 'Next for you ▶' : 'Next ▶';
+}
+function setRole(w) {
+  role = w || '';
+  beats.forEach((b) => b.el.classList.toggle('for-you', forRole(b)));
+  setNextLabel();
 }
 
 function showTip(html, cx, cy) {
@@ -160,8 +201,15 @@ function update(dt) {
   const sc = clamp((window.scrollY - trackTop) / trackLen, 0, 1);
   const target = X0 + sc * (X1 - X0);
   const prev = P.x;
-  if (reduced || Math.abs(target - P.x) > 560 || started < 0.1) P.x = target;
-  else { P.x += (target - P.x) * (1 - Math.exp(-dt * 9)); if (Math.abs(target - P.x) < 0.08) P.x = target; }
+  // Suman follows the scroll, but never faster than he can run, so every scene has time to arrive.
+  // Only a chapter button or a dragged scrollbar (a very long way) moves him in one go.
+  if (reduced || teleport || Math.abs(target - P.x) > 1400 || started < 0.1) { P.x = target; teleport = false; }
+  else {
+    let step = (target - P.x) * (1 - Math.exp(-dt * 8));
+    step = clamp(step, -MAXV * dt, MAXV * dt);
+    P.x += step;
+    if (Math.abs(target - P.x) < 0.08) P.x = target;
+  }
   const dx = P.x - prev;
   P.v = dx / dt;
   P.moving = Math.abs(P.v) > 9;
@@ -170,7 +218,34 @@ function update(dt) {
   P.run = Math.abs(P.v) > 175;
   if (P.run && !wasRun && P.ground) puff(P.x - P.face * 4, 0, 2);
   P.phase = P.moving ? (P.phase + Math.abs(dx) / (P.run ? 28 : 17)) % 1 : 0;
-  if (P.moving && sc > 0.002) controls.classList.add('is-gone');
+
+  // Obstacles: crossed going forwards, on foot or in the air.
+  warnT = Math.max(0, warnT - dt);
+  for (const o of OBST) {
+    if (o.done) continue;
+    const ahead = o.x - P.x;
+    if (ahead > 0 && ahead < 46 && P.ground && P.moving && P.face > 0) {
+      warnT = 0.4;
+      if (!hintShown && started > 0.6) {
+        hintShown = true;
+        showTip('<b>MIGI says:</b>Jump! Press Space or the up arrow, or tap the scene.', (P.x - camX) * S, (Fs - 40) * S);
+      }
+    }
+    if (!(prev < o.x && P.x >= o.x)) continue;
+    o.done = true;
+    if (Math.abs(dx) > 120) continue;                   // passed during a jump between chapters: no score either way
+    if (!P.ground && -P.jy >= (o.h || 3) * 0.6) {
+      coinsGot++; hudCoins.textContent = coinsGot;
+      sparkle(o.x, -(o.h || 3) - 4, 12, '#a7f070');
+      parts.push({ k: 'txt', s: 'CLEARED +1', x: o.x - 26, y: -30, vx: 0, vy: -18, life: 1.2, max: 1.2, col: '#a7f070' });
+      M.happy = 1.2; beep(784, 0.08); beep(1175, 0.14, 'square', 0.035, 0, 0.08);
+    } else {
+      P.ground = false; P.vy = -80; puff(o.x, 0, 6);
+      parts.push({ k: 'txt', s: 'OOF', x: o.x - 9, y: -34, vx: 0, vy: -16, life: 1, max: 1, col: '#f6757a' });
+      if (coinsGot > 0) { coinsGot--; hudCoins.textContent = coinsGot; parts.push({ k: 'coin', x: o.x, y: -18, vx: -30, vy: -70, life: 0.9, max: 0.9 }); }
+      beep(150, 0.18, 'sawtooth', 0.03, 0.6);
+    }
+  }
 
   if (!P.ground) {
     P.vy += 640 * dt; P.jy += P.vy * dt;
@@ -213,7 +288,7 @@ function update(dt) {
   fx.born = Math.max(0, fx.born - dt / 1.6);
 
   let a = 0;
-  for (const b of beats) if (target >= b.x - 28) a = b.i;
+  for (const b of beats) if (P.x >= b.x - 28) a = b.i;   // the story follows Suman, not the scroll bar
   setActive(a);
   if (cur.tick) cur.tick(dt, beats[active].id, beatT);
 
@@ -222,7 +297,7 @@ function update(dt) {
   M.x += (mx - M.x) * (1 - Math.exp(-dt * 4.5));
   M.y += (my - M.y) * (1 - Math.exp(-dt * 7));
   if (Math.abs(P.x - M.x) > 3) M.face = Math.sign(P.x - M.x);
-  M.talk -= dt; M.happy -= dt;
+  M.talk -= dt; M.happy -= dt; M.alert -= dt;
 
   for (const c of COINS) {
     if (c.got || Math.abs(P.x - c.x) > 9) continue;
@@ -230,7 +305,7 @@ function update(dt) {
     c.got = true; coinsGot++; hudCoins.textContent = coinsGot;
     sparkle(c.x, -c.h, 10); parts.push({ k: 'txt', s: '+1', x: c.x - 5, y: -c.h - 6, vx: 0, vy: -22, life: 0.9, max: 0.9, col: '#ffe08a' });
     M.happy = 1.2; beep(988, 0.07); beep(1319, 0.14, 'square', 0.035, 0, 0.07);
-    if (coinsGot === COINS.length) parts.push({ k: 'txt', s: 'EVERY COIN!', x: P.x - 32, y: -64, vx: 0, vy: -12, life: 2.4, max: 2.4, col: '#a7f070' });
+    if (coinsGot === COIN_TOTAL) parts.push({ k: 'txt', s: 'EVERY COIN!', x: P.x - 32, y: -64, vx: 0, vy: -12, life: 2.4, max: 2.4, col: '#a7f070' });
   }
 
   // Crows leave the wire when Suman walks underneath.
@@ -244,7 +319,7 @@ function update(dt) {
   for (let i = parts.length - 1; i >= 0; i--) {
     const p = parts[i];
     p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt;
-    if (p.k === 'spark') p.vy += 160 * dt;
+    if (p.k === 'spark' || p.k === 'coin') p.vy += 160 * dt;
     if (p.k === 'dust') { p.vx *= 0.94; p.vy *= 0.94; }
     if (p.life <= 0) parts.splice(i, 1);
   }
@@ -294,10 +369,14 @@ function drawBillboard(st, sx, py) {
 }
 
 function drawStation(st, sx, py) {
-  if (st.bot != null) { drawBillboard(st, sx, py); return; }
+  if (st.bot != null && !st.sys) { drawBillboard(st, sx, py); return; }
   const cx = sx(st.x);
   let y = py + st.y;
-  if (narrow) y = Math.max(y, hudW);
+  if (st.sys && st.bot != null) {                       // a System window that sits above the alcove, not inside it
+    const h = 16 + (st.items || []).reduce((a, it) => a + 7 * ((it.sc && textW(it.n != null ? commas(it.n) + (it.suf || '') : it.s, it.sc) + 22 <= W) ? it.sc : 1) + 3, 0);
+    y = py + st.bot - h;
+  }
+  y = Math.max(y, hudW);
   if (st.tags) {
     st.tags.forEach(([s, col], i) => {
       const k = (beatT - 0.25 - i * 0.26) / 0.3;
@@ -320,6 +399,36 @@ function drawStation(st, sx, py) {
   if (st.sys) { if (rows.length) sysBox(ctx, rows, cx, y, W, tNow); }
   else rows.forEach((rw) => { ctx.globalAlpha = rw.k; y += plate(ctx, rw.s, clamp(cx, (textW(rw.s, rw.sc) + 12) / 2, W - (textW(rw.s, rw.sc) + 12) / 2), y + Math.round(4 * (1 - rw.k)), rw.col, rw.sc) + 3; });
   ctx.globalAlpha = 1;
+}
+
+/* Hurdles from the story, drawn standing on the pavement. X is the centre, Y the ground under Suman's feet. */
+function drawObstacle(o, X, Y, t) {
+  const c = ctx;
+  if (o.kind === 'slip') {                              // the group-discussion rejection, November 2017
+    R(c, INK, X - 9, Y - 12, 18, 12); R(c, '#f4f4f4', X - 8, Y - 11, 16, 10); R(c, '#c0cbdc', X - 8, Y - 2, 16, 1);
+    R(c, '#c0cbdc', X + 4, Y - 11, 4, 3); R(c, '#e8edf4', X + 5, Y - 10, 3, 2);
+    text(c, 'NO', X - 6, Y - 10, '#e43b44'); R(c, '#e43b44', X - 7, Y - 3, 11, 1);
+  } else if (o.kind === 'pothole') {                    // the months without a job
+    R(c, '#6a6258', X - 9, Y - 1, 18, 1); R(c, '#0b0a16', X - 8, Y, 16, 3); R(c, '#1c1a2e', X - 6, Y + 1, 12, 1);
+    R(c, INK, X + 9, Y - 7, 5, 7); R(c, '#ef7d57', X + 10, Y - 6, 3, 6); R(c, '#f4f4f4', X + 10, Y - 4, 3, 1); R(c, '#ef7d57', X + 9, Y - 1, 5, 1);
+  } else if (o.kind === 'bug') {                        // the scorer bug that hid three HumanEval points
+    const k = Math.floor(t * 8) % 2;
+    [-4, 0, 4].forEach((d, i) => { R(c, INK, X + d - 1, Y - 2 + ((i + k) % 2), 1, 2); R(c, INK, X + d + 2, Y - 2 + ((i + k + 1) % 2), 1, 2); });
+    R(c, INK, X - 6, Y - 8, 12, 6); R(c, '#e43b44', X - 5, Y - 7, 10, 4); R(c, '#f6757a', X - 4, Y - 7, 3, 1); R(c, INK, X, Y - 7, 1, 4);
+    R(c, INK, X + 5, Y - 7, 3, 3); R(c, '#ffcd75', X + 6, Y - 6, 1, 1);
+    R(c, INK, X + 8, Y - 10, 1, 3); R(c, INK, X + 9, Y - 11, 1, 1);
+    ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.35 + 0.2 * Math.sin(t * 5); R(c, '#e43b44', X - 7, Y - 9, 14, 8); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  } else if (o.kind === 'bot') {                        // a fake crawler asking for /.env
+    const b = Math.round(Math.sin(t * 4) * 1);
+    R(c, INK, X - 5, Y - 11 + b, 10, 9); R(c, '#5a6988', X - 4, Y - 10 + b, 8, 7); R(c, '#16213a', X - 3, Y - 9 + b, 6, 3);
+    R(c, Math.floor(t * 3) % 2 ? '#e43b44' : '#f6757a', X - 2, Y - 8 + b, 1, 1); R(c, Math.floor(t * 3) % 2 ? '#e43b44' : '#f6757a', X + 1, Y - 8 + b, 1, 1);
+    R(c, INK, X - 3, Y - 2, 2, 2); R(c, INK, X + 1, Y - 2, 2, 2); R(c, INK, X, Y - 13 + b, 1, 2);
+    R(c, INK, X - 15, Y - 22, 30, 10); R(c, '#f4f4f4', X - 14, Y - 21, 28, 8); text(c, '/.ENV', X - 14, Y - 20, '#b13e53');
+  } else if (o.kind === 'grave') {                      // the model a provider retired
+    R(c, INK, X - 10, Y - 13, 20, 13); R(c, INK, X - 8, Y - 15, 16, 2); R(c, '#8b9bb4', X - 9, Y - 12, 18, 12); R(c, '#8b9bb4', X - 7, Y - 14, 14, 2);
+    R(c, '#c0cbdc', X - 9, Y - 12, 18, 1); R(c, '#5a6988', X - 9, Y - 2, 18, 2); text(c, 'RIP', X - 8, Y - 11, INK);
+    R(c, '#2f6b4f', X - 11, Y - 1, 3, 1); R(c, '#4d9c6c', X + 8, Y - 2, 2, 2);
+  }
 }
 
 // Draws one scene, with everyone in it, into ctx.
@@ -424,6 +533,11 @@ function render(cs) {
     ctx.drawImage(coinF[Math.floor(t * 7 + c.x) % 4], X - 5, Y - 5);
     if (Math.floor(t * 2 + c.x) % 5 === 0) R(ctx, '#fffdf2', X + 3, Y - 5, 1, 1);
   }
+  for (const o of OBST) {
+    if (o.x < cs.ox - 40 || o.x > cs.x1 + 40) continue;
+    const X = sxw(o.x);
+    if (X > -30 && X < W + 30) drawObstacle(o, X, Fs, t);
+  }
 
   // Shadows, then MIGI, then Suman.
   const hx = sxw(P.x), k = clamp(1 + P.jy / 60, 0.45, 1);
@@ -440,10 +554,15 @@ function render(cs) {
   if (fx.born > 0) ctx.drawImage(GL.cool, sxw(M.x) - 13, Math.round(Fs + M.y) - 14);
   ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
   migi(ctx, M.x - camX, Fs + M.y, { t, face, facing: M.face, holo, pulse: M.talk > 0 && Math.floor(t * 8) % 2 });
-  if (M.talk > 0.2) {
+  const alert = warnT > 0 || M.alert > 0;
+  if (M.talk > 0.2 || alert) {
     const bx = sxw(M.x) - 6, by = Math.round(Fs + M.y) - 25;
-    R(ctx, INK, bx - 1, by, 15, 9); R(ctx, INK, bx, by - 1, 13, 11); R(ctx, '#f4f4f4', bx, by, 13, 9); R(ctx, '#f4f4f4', bx + 3, by + 9, 2, 1); R(ctx, INK, bx + 2, by + 10, 4, 1);
-    for (let i = 0; i < 3; i++) R(ctx, Math.floor(t * 6) % 3 === i ? '#3b5dc9' : '#8b9bb4', bx + 2 + i * 4, by + 4, 2, 2);
+    R(ctx, INK, bx - 1, by, 15, 9); R(ctx, INK, bx, by - 1, 13, 11); R(ctx, alert ? '#ffcd75' : '#f4f4f4', bx, by, 13, 9); R(ctx, alert ? '#ffcd75' : '#f4f4f4', bx + 3, by + 9, 2, 1); R(ctx, INK, bx + 2, by + 10, 4, 1);
+    if (alert) { const on = Math.floor(t * 8) % 2; R(ctx, INK, bx + 6, by + 1 + on, 1, 4); R(ctx, INK, bx + 6, by + 6 + on, 1, 1); if (M.alert > 0 && warnT <= 0) { R(ctx, INK, bx + 2, by + 3, 1, 1); R(ctx, INK, bx + 10, by + 3, 1, 1); } }
+    else for (let i = 0; i < 3; i++) R(ctx, Math.floor(t * 6) % 3 === i ? '#3b5dc9' : '#8b9bb4', bx + 2 + i * 4, by + 4, 2, 2);
+  }
+  if (M.alert > 0 && warnT <= 0) {                      // a beat that matters to this reader
+    ctx.globalAlpha = Math.min(1, M.alert * 2); label(ctx, 'FOR YOU', sxw(M.x) - 20, Math.round(Fs + M.y) - 38, '#73eff7'); ctx.globalAlpha = 1;
   }
   if (fx.born > 0) { ctx.globalAlpha = Math.min(1, fx.born * 3); label(ctx, 'MIGI IS ONLINE', sxw(M.x) - 41, Math.round(Fs + M.y) - 40 - Math.round((1 - fx.born) * 8), '#73eff7'); ctx.globalAlpha = 1; }
 
@@ -460,6 +579,7 @@ function render(cs) {
     else if (p.k === 'steam') { ctx.globalAlpha = a * 0.5; R(ctx, '#f4f4f4', X, Y, 2, 2); }
     else if (p.k === 'crow') { ctx.globalAlpha = Math.min(1, a * 3); crow(ctx, X, Y, Math.floor(t * 9) % 2, '#231d2e'); }
     else if (p.k === 'txt') { ctx.globalAlpha = Math.min(1, a * 2.5); label(ctx, p.s, X, Y, p.col); }
+    else if (p.k === 'coin') { ctx.globalAlpha = Math.min(1, a * 2); ctx.drawImage(coinF[Math.floor(t * 12) % 4], X - 5, Y - 5); }
   }
   ctx.globalAlpha = 1;
 
@@ -519,7 +639,7 @@ function frameDraw() {
 function sheet() {
   S = 6; W = 232; H = 150;
   cv.width = W; cv.height = H; cv.style.width = W * S + 'px'; cv.style.height = H * S + 'px';
-  $('#panel').style.display = 'none'; controls.style.display = 'none';
+  $('#panel').style.display = 'none';
   const draw = (now) => {
     const t = now / 1000;
     R(ctx, '#7fa7ba', 0, 0, W, H); R(ctx, '#aa9f8f', 0, 48, W, 6); R(ctx, '#aa9f8f', 0, 96, W, 6); R(ctx, '#aa9f8f', 0, 144, W, 6);
@@ -565,7 +685,7 @@ function boot() {
     btn.addEventListener('click', () => goTo(first.i));
     li.appendChild(btn); pipsEl.appendChild(li);
   });
-  nextBtn.addEventListener('click', () => goTo(active === beats.length - 1 ? 0 : active + 1));
+  nextBtn.addEventListener('click', () => goTo(active === beats.length - 1 ? 0 : nextFor(active)));
   prevBtn.addEventListener('click', () => goTo(active - 1));
   soundBtn.addEventListener('click', () => {
     soundOn = !soundOn;
@@ -574,13 +694,8 @@ function boot() {
     beep(660, 0.08); beep(990, 0.12, 'square', 0.035, 0, 0.08);
   });
 
-  // "Hide text" folds the story away so the whole scene is visible; the chapter buttons stay.
-  const miniBtn = $('#mini');
-  miniBtn.addEventListener('click', () => {
-    const on = document.documentElement.classList.toggle('story-min');
-    miniBtn.setAttribute('aria-pressed', String(on));
-    miniBtn.textContent = on ? 'Show text' : 'Hide text';
-  });
+  // The reader's choice in the first beat ("A marketing hire", "An AI hire"...) comes from ui.js.
+  window.addEventListener('cm:who', (e) => setRole(e.detail));
 
   window.addEventListener('keydown', (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector('dialog[open]') || document.documentElement.classList.contains('plain')) return;
@@ -605,7 +720,7 @@ function boot() {
     }
     const lx = mx + camX - cur.ox, ly = my - (Fs - 160);
     const h = cur.hot.find((o) => lx >= o.x && lx <= o.x + o.w && ly >= o.y && ly <= o.y + o.h);
-    if (h) { showTip(`<b>MIGI points out:</b>${h.say}`, cx, cy); M.talk = 1.6; beep(740, 0.06, 'triangle'); return; }
+    if (h) { showTip(`<b>MIGI points out:</b>${h.say}`, cx, cy); M.talk = 1.6; beep(740, 0.06, 'triangle'); if (h.jump) jump(); return; }
     jump();
   });
 
@@ -622,7 +737,29 @@ function boot() {
     requestAnimationFrame(frame);
   };
   requestAnimationFrame(frame);
-  window.__cm = { P, M, beats, goTo, resize, get state() { return { S, W, H, active, variant, camX, coinsGot, RATIO, trackLen, level, scene: cur.id }; } };
+  window.__cm = { P, M, beats, goTo, resize, logged, SKILLS, ALL_SKILLS, get role() { return role; }, get state() { return { S, W, H, active, variant, camX, coinsGot, RATIO, trackLen, level, scene: cur.id }; } };
+
+  // The loading screen: it fills as the fonts and the first frames arrive, and never stays longer than it must.
+  const root = document.documentElement, bootEl = $('#boot');
+  if (root.classList.contains('booting') && bootEl) {
+    const fill = $('#boot-fill'), msg = $('#boot-msg'), t0 = performance.now();
+    const steps = ['Loading Kolkata, 2009…', 'Teaching MIGI the numbers…', 'Laying the road to Pune…', 'Ready.'];
+    const set = (k) => { fill.style.width = [35, 62, 86, 100][k] + '%'; msg.textContent = steps[k]; };
+    set(0);
+    const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+    fontsReady.then(() => { set(1); fitLogo(); resize(); });
+    Promise.all([fontsReady, new Promise((r) => setTimeout(r, 650))]).then(() => {
+      set(2);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        set(3);
+        setTimeout(() => {
+          bootEl.classList.add('is-out');
+          try { sessionStorage.setItem('cm:booted', '1'); } catch (e) { /* private mode */ }
+          setTimeout(() => root.classList.remove('booting'), 500);
+        }, Math.max(250, 1300 - (performance.now() - t0)));
+      }));
+    });
+  }
 }
 
 boot();

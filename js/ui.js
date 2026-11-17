@@ -9,16 +9,18 @@ const store = { get: (k) => { try { return localStorage.getItem(k); } catch (e) 
 
 /* ───────── who is reading ───────── */
 const WHO = {
-  brand: 'For a marketing hire, start with chapter 4. It has the team of 21, the 20+ launches and the 50+ websites.',
-  ai: 'For an AI hire, chapter 5 has the 26+ products, the 46 agents and the model he trained from scratch.',
-  founder: 'If you need something built, chapter 5 shows what he ships alone, and the last chapter has a free 15-minute consult.',
-  curious: 'Welcome. There are coins along the way, and some of them need a jump.',
+  brand: 'MIGI will flag the stops that matter for a marketing hire, and Next will skip to them. Chapter 4 is the heart of it.',
+  ai: 'MIGI will flag the stops that matter for an AI hire, and Next will skip to them. Chapter 5 is the heart of it.',
+  founder: 'MIGI will flag what he can build for you, and Next will skip to it. The rooftop has a free 15-minute consult.',
+  curious: 'Welcome. There are coins along the way, and a few hurdles that need a jump.',
 };
+const ROLE_NAME = { brand: 'a marketing hire', ai: 'an AI hire', founder: 'a client who needs something built', curious: 'a curious visitor' };
 let who = store.get('cm:who') || '';
 const setWho = (w) => {
   who = w; store.set('cm:who', w);
   $$('[data-who]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.who === w)));
   if (WHO[w]) $('#who-line').textContent = WHO[w];
+  window.dispatchEvent(new CustomEvent('cm:who', { detail: w }));   // the game marks the beats for this reader
 };
 $$('[data-who]').forEach((b) => b.addEventListener('click', () => setWho(b.dataset.who)));
 if (WHO[who]) setWho(who);
@@ -114,6 +116,33 @@ function calc() {
 $$('#calc [data-k]').forEach((el) => el.addEventListener('input', calc));
 calc();
 
+/* ───────── MIGI's evidence summary: every skill on the page, with the proof behind it ───────── */
+function buildSummary() {
+  const cm = window.__cm;
+  const beats = $$('.beat').filter((b) => b.querySelector('.skills'));
+  const role = (cm && cm.role) || who;
+  const rel = (b) => role && role !== 'curious' && (b.dataset.for || '').split(' ').includes(role);
+  const ordered = role && role !== 'curious' ? [...beats.filter(rel), ...beats.filter((b) => !rel(b))] : beats;
+  const seen = cm ? cm.logged : new Set();
+  const total = cm ? cm.ALL_SKILLS.length : 0;
+  $('#summary-intro').textContent = `${seen.size} of ${total} skills logged on your walk${role && ROLE_NAME[role] ? `, ordered for ${ROLE_NAME[role]}` : ''}. Skills you have not reached yet are shown faded.`;
+  const text = [`Suman Debnath: evidence summary (from hire.sumandebnath.houseofnamus.com)`, ''];
+  $('#summary-body').innerHTML = ordered.map((b) => {
+    const h = b.querySelector('h2, h1').textContent.trim();
+    const proof = $$('.proof li', b).map((li) => li.textContent.replace(/\s*↗/g, '').trim());
+    const skills = $$('.skills li', b).map((li) => li.textContent.trim());
+    text.push(h, ...proof.map((p) => `- ${p}`), `Skills: ${skills.join(', ')}`, '');
+    return `<section><h4>${esc(h)}</h4>${proof.length ? `<ul>${proof.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}<ul class="tags">${skills.map((s) => `<li class="${seen.has(s) ? '' : 'unseen'}">${esc(s)}</li>`).join('')}</ul></section>`;
+  }).join('');
+  text.push(`Contact: ${EMAIL} · Résumé: https://sumandebnath.houseofnamus.com/Suman_Debnath_Resume.pdf`);
+  const plainText = text.join('\n');
+  $('#summary-share').href = `mailto:?subject=${enc('Candidate: Suman Debnath (brand marketing + AI)')}&body=${enc(plainText.slice(0, 1800))}`;
+  return plainText;
+}
+let summaryText = '';
+$('#summary-copy').addEventListener('click', (e) => copy(summaryText, e.currentTarget, 'Copied'));
+$('#summary-print').addEventListener('click', () => window.print());
+
 /* ───────── opening and closing windows ───────── */
 document.addEventListener('click', (e) => {
   const t = e.target instanceof Element ? e.target : null;
@@ -122,7 +151,8 @@ document.addEventListener('click', (e) => {
   if (opener) {
     const d = t.closest('dialog');
     if (d) d.close();
-    if (opener.dataset.open === 'compose') openCompose(opener.dataset.compose || null); else dlg(opener.dataset.open).showModal();
+    if (opener.dataset.open === 'compose') openCompose(opener.dataset.compose || null);
+    else { if (opener.dataset.open === 'summary') summaryText = buildSummary(); dlg(opener.dataset.open).showModal(); }
     return;
   }
   if (t.closest('[data-close]')) t.closest('dialog').close();

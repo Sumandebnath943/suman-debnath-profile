@@ -1099,7 +1099,7 @@
   const fitSummary = () => {
     if (!lastFit) return '';
     const { title, hits, gaps, verdict } = lastFit;
-    return [`Fit check: Suman Debnath for ${title}`, `${verdict} ${hits.length} of ${hits.length + gaps.length} requirements have evidence.`, '', ...hits.map((h) => `✓ ${h.k}: ${h.ev}`), ...(gaps.length ? ['', `To ask him about: ${gaps.join(', ')}`] : []), '', 'Profile: https://hiresumandebnath.houseofnamus.com/'].join('\n');
+    return [`Fit check: Suman Debnath for ${title}`, `${verdict} ${hits.length} of ${hits.length + gaps.length} requirements have evidence.`, '', ...hits.map((h) => `✓ ${h.k}: ${h.ev}`), ...(gaps.length ? ['', `To ask him about: ${gaps.join(', ')}`] : []), '', 'Profile: https://hire.sumandebnath.houseofnamus.com/'].join('\n');
   };
   fitResult.addEventListener('click', async (e) => {
     if (!(e.target instanceof Element)) return;

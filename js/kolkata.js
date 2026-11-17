@@ -33,10 +33,34 @@ export function kolkata() {
   const back = mk(1540, 172);
   skyline(back.x, back.w, 172, r, { w: [38, 74], h: [72, 128], win: [4, 6], pals: [BLD.ochre, BLD.rose, BLD.blue, BLD.cream, BLD.mint, BLD.grey], big: true, gap: [44, 410] });
 
-  // The street the story happens on.
-  const PX0 = -120, LH = 180, B = 134, F = 160;
-  const play = mk(1560, LH), x = play.x, c = (wx) => wx - PX0;
+  // The street the story happens on. It starts well left of the first beat, so the road always
+  // reaches the left edge of the screen, however wide the screen is.
+  const PX0 = -460, LH = 180, B = 134, F = 160;
+  const play = mk(1900, LH), x = play.x, c = (wx) => wx - PX0;
   const lights = [], hot = [];
+
+  // West end of the street: a second stretch of old wall, and a hand-pulled rickshaw waiting for a fare.
+  const r2 = rng(1947);                                 // its own seed, so the rest of the street is unchanged
+  R(x, '#b9946e', c(-460), B - 22, 330, 22); R(x, '#d3ad83', c(-460), B - 22, 330, 1); R(x, '#94704f', c(-460), B - 3, 330, 3);
+  for (let i = 0; i < 7; i++) { const bx = c(-450 + r2() * 300), by = B - 18 + r2() * 8; R(x, '#a8443a', bx, by, 6, 3); R(x, '#712c2c', bx + 2, by, 1, 3); }
+  [['#73eff7', -430], ['#ffcd75', -402], ['#f6757a', -300], ['#a7f070', -214]].forEach(([col, wx]) => { R(x, '#f4f4f4', c(wx), B - 19, 10, 12); R(x, col, c(wx) + 1, B - 18, 8, 7); R(x, DK, c(wx) + 2, B - 9, 6, 1); });
+  tree(x, c(-330), B, 30, r2);
+  { const l0 = lamp(x, c(-390), B, 62); lights.push({ x: l0.x + PX0, y: l0.y, g: 'warm' }); }
+  const rickshaw = () => { // The rickshaw: a big spoked wheel, a black folding hood, long shafts and the puller resting between them.
+    const X = c(936), Y = B + 16;                       // parked in front of the sweet shop
+    seg(x, '#4a2f18', X - 30, Y - 12, X - 2, Y - 10, 1); seg(x, '#6a4320', X - 30, Y - 13, X - 2, Y - 11, 1);
+    R(x, '#7a2a3c', X - 4, Y - 20, 20, 9); R(x, '#b13e53', X - 4, Y - 20, 20, 1); R(x, '#4a1c28', X - 4, Y - 12, 20, 2);
+    R(x, '#262b44', X - 2, Y - 31, 18, 11); R(x, '#3a4466', X, Y - 33, 14, 2); R(x, '#3a4466', X - 2, Y - 31, 1, 11);
+    for (let i = 0; i < 4; i++) R(x, '#3a4466', X + 1 + i * 4, Y - 30, 1, 9);
+    disc(x, '#181425', X + 12, Y - 8, 8); disc(x, '#8b5a2b', X + 12, Y - 8, 7); disc(x, '#181425', X + 12, Y - 8, 5);
+    for (let a = 0; a < 8; a++) seg(x, '#a9743c', X + 12, Y - 8, X + 12 + Math.round(Math.cos(a * 0.785) * 5), Y - 8 + Math.round(Math.sin(a * 0.785) * 5), 1);
+    disc(x, '#c0cbdc', X + 12, Y - 8, 1);
+    const px0 = X - 26;                                 // the puller, in a white vest and a checked gamchha
+    R(x, '#c8946a', px0, Y - 26, 5, 5); R(x, '#262b44', px0, Y - 27, 5, 2); R(x, '#181425', px0, Y - 24, 1, 1);
+    R(x, '#e8edf4', px0 - 1, Y - 21, 7, 7); R(x, '#e43b44', px0 - 1, Y - 21, 7, 1); R(x, '#c8946a', px0 + 5, Y - 18, 2, 5);
+    R(x, '#8b9bb4', px0 - 1, Y - 14, 7, 4); R(x, '#c8946a', px0, Y - 10, 2, 6); R(x, '#c8946a', px0 + 4, Y - 10, 2, 6);
+    hot.push({ x: 904, y: B - 18, w: 50, h: 34, say: 'A hand-pulled rickshaw. Kolkata is one of the last cities in the world that still has them.' });
+  };
 
   // Trees and the big banyan sit behind everything else on the street.
   tree(x, c(-78), B, 44, r);
@@ -230,6 +254,7 @@ export function kolkata() {
 
   // Parked taxi, drawn after the road so its wheels sit on it.
   taxi(x, c(152), B + 17);
+  rickshaw();
   hot.push({ x: 152, y: B - 5, w: 48, h: 22, say: 'A yellow Ambassador taxi, as Kolkata as it gets. The supercars come later in the story.' });
 
   // Foreground silhouettes that slide past in front of everything.

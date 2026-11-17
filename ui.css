@@ -4,9 +4,7 @@
 .hud-lv { margin-right: 8px; color: var(--cyan); }
 .hud-lv b { font-weight: 400; }
 
-/* chips: who is reading */
-.who { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.who-q { font-size: 17px; color: var(--dim); margin-right: 2px; }
+/* chips: what the reader is here for */
 .chip { appearance: none; cursor: pointer; font-size: 17px; padding: 3px 9px 4px; background: rgba(244, 244, 244, 0.06); color: var(--text); border: 2px solid rgba(244, 244, 244, 0.45); }
 .chip:hover, .chip:focus-visible { border-color: var(--gold); color: var(--gold); outline: none; }
 .chip[aria-pressed='true'] { background: var(--gold); border-color: var(--gold); color: var(--ink); }
@@ -15,20 +13,15 @@
 .beat a.btn { color: var(--ink); text-decoration: none; display: inline-block; }
 .beat a.btn.btn-ghost { color: var(--text); }
 .inline { appearance: none; border: 0; padding: 0; background: none; font: inherit; color: var(--cyan); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
-.cta-row { display: flex; flex-wrap: wrap; gap: 12px 12px; align-items: center; padding: 4px 3px 6px; }
-.tools { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 4px 3px 6px; }
-.tools .btn { white-space: normal; text-align: left; font-size: 18px; line-height: 1.15; }
-
-/* chapter buttons under the story */
-.nav-mid { margin: 0 auto; display: grid; justify-items: center; gap: 3px; }
-.pips { margin: 0; }
-.pips button { width: 22px; height: 22px; font: 400 16px/1 var(--pixel); color: var(--text); display: grid; place-items: center; }
-.pips button[aria-current='true'] { color: var(--ink); }
-.pips button.is-done { color: var(--ink); }
-.count { font-size: 15px; color: var(--dim); background: rgba(24, 20, 37, 0.8); padding: 0 6px 1px; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px 14px; align-items: center; align-content: start; padding: 4px 3px 6px; }
+.beat > .cta-row { grid-column: 2 / 3; }
+.tools { grid-column: 2 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 14px; padding: 4px 3px 6px; align-content: start; }
+.tools .btn { white-space: normal; text-align: left; font-size: 17px; line-height: 1.12; padding: 6px 10px 8px; }
+.count { font-size: 16px; color: var(--dim); }
 
 /* windows */
 .dlg { border: 0; padding: 0; color: var(--text); width: min(640px, calc(100vw - 24px)); max-height: min(88vh, 760px); overflow: auto; }
+.dlg-wide { width: min(780px, calc(100vw - 24px)); }
 .dlg::backdrop { background: rgba(12, 10, 24, 0.72); }
 .dlg-in { display: grid; gap: 11px; padding: 22px 22px 22px; }
 .dlg h3 { margin: 0; font: 800 23px/1.2 var(--body); color: #fff; padding-right: 86px; }
@@ -59,6 +52,15 @@
 .calc-out b { color: var(--gold); margin: 0 5px; font-size: 19px; }
 .calc-out .save b { color: #a7f070; }
 
+/* MIGI's evidence summary */
+.summary { display: grid; gap: 14px; font-size: 14.5px; }
+.summary section { display: grid; gap: 6px; }
+.summary h4 { margin: 0; font: 400 19px/1.1 var(--pixel); letter-spacing: 0.04em; text-transform: uppercase; color: var(--gold); }
+.summary ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.summary .tags { display: flex; flex-wrap: wrap; gap: 5px; padding: 0; list-style: none; }
+.summary .tags li { font: 400 15px/1 var(--pixel); padding: 3px 7px 4px; background: rgba(115, 239, 247, 0.1); box-shadow: inset 0 0 0 1px rgba(115, 239, 247, 0.45); color: #d6f7fb; }
+.summary .tags li.unseen { opacity: 0.5; box-shadow: inset 0 0 0 1px rgba(244, 244, 244, 0.3); color: var(--dim); background: none; }
+
 /* questions section and footer, below the game */
 .faq { max-width: 760px; margin: 0 auto; padding: 44px 18px 18px; display: grid; gap: 10px; }
 .faq h2 { font: 800 clamp(22px, 3vw, 30px)/1.2 var(--body); color: #fff; margin-bottom: 6px; }
@@ -69,17 +71,31 @@
 /* plain-text view: the same words, top to bottom, with no game */
 .plain .stage { position: static; height: auto; overflow: visible; display: block; }
 .plain .world { height: auto !important; }
-.plain .scene-wrap, .plain .beat-nav, .plain .logo, .plain .who, .plain #sound, .plain .hud-where, .plain .hud-coins { display: none; }
-.plain .panel { position: static; width: auto; max-width: 760px; margin: 70px auto 10px; padding: 0 16px; display: block; filter: none; border: 0; overflow: visible; background: none; }
-.plain .beat, .js.plain.story-min .beat { display: grid; position: static; visibility: visible; opacity: 1; transform: none; margin-bottom: 14px; }
+.plain .scene-wrap, .plain .beat-nav, .plain .logo, .plain .who, .plain .hint, .plain .boot, .plain #sound, .plain .hud-where, .plain .hud-coins, .plain .hud-ev { display: none; }
+.plain .panel { height: auto; max-width: 860px; margin: 72px auto 10px; padding: 0 16px; display: block; border: 0; box-shadow: none; overflow: visible; background: none; }
+.plain .panel::before { display: none; }
+.plain .beats { display: grid; gap: 0; }
+.plain .beat, .js.plain .beat {
+  position: static; inset: auto; height: auto; overflow: visible; visibility: visible; opacity: 1; transform: none;
+  padding: 18px 0 20px; border-bottom: 2px solid rgba(244, 244, 244, 0.12);
+}
+.plain .beat.for-you .beat-tag::after { display: none; }
+.plain .beat-title .brand-logo h1.script { font-size: 44px; }
 
 @media (max-width: 820px), (max-aspect-ratio: 5/6) {
-  .tools { grid-template-columns: 1fr; gap: 10px; }
-  .tools .btn { font-size: 17px; }
+  .tools { grid-column: 1; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tools .btn { font-size: 16px; }
+  .beat > .cta-row { grid-column: 1; }
   .calc { grid-template-columns: 1fr; }
-  .pips button { width: 20px; height: 20px; font-size: 15px; }
-  .hud-lv { margin-right: 4px; }
   .hud a.hud-btn { display: none; }      /* the résumé link stays in the last chapter and in plain-text view */
   .dlg-in { padding: 18px 16px; }
 }
-.no-js .who, .no-js [data-open] { display: none; }
+.no-js .who-chips, .no-js [data-open] { display: none; }
+
+@media print {
+  body > *:not(#dlg-summary) { display: none !important; }
+  #dlg-summary { position: static; display: block; width: auto; max-height: none; background: #fff; color: #000; clip-path: none; box-shadow: none; }
+  #dlg-summary .dlg-close, #dlg-summary .cta-row { display: none; }
+  #dlg-summary h3, #dlg-summary .dim, .summary h4 { color: #000; }
+  .summary .tags li { color: #000; background: none; box-shadow: inset 0 0 0 1px #999; }
+}

@@ -2,7 +2,7 @@
    and the four-month gap that follows it. */
 import { mk, R, mix, disc, seg, text, textW, plate, kf, clamp } from './kit.js';
 import { rng, DK, BLD, facade, win, palm, room, lamp, signboard } from './props.js';
-import { ground, foreground, lcd, laptop, desk, person, plant, hills } from './parts.js';
+import { ground, foreground, lcd, laptop, desk, person, plant, hills, cart } from './parts.js';
 
 const h1 = (n) => { const s = Math.sin(n * 127.1) * 43758.5453; return s - Math.floor(s); };
 const vn = (x) => { const i = Math.floor(x), f = x - i, u = f * f * (3 - 2 * f); return h1(i) * (1 - u) + h1(i + 1) * u; };
@@ -91,6 +91,7 @@ function country(o) {
       R(ctx, '#f4f4f4', x0 + Math.round(u * w) - 1, y - 2, 3, 6);
     },
     stations: o.stations || {},
+    obstacles: o.obstacles || [],
   };
 }
 
@@ -98,6 +99,10 @@ export const road = () => country({ id: 'road', len: 200, title: 'KOLKATA > PUNE
 export const gap = () => country({
   id: 'gap', len: 300, gap: true, title: 'OCTOBER 2018', coins: [[156, 30]],
   stations: { gap: { x: 156, y: 44, items: [{ at: 0.4, s: 'FOUR MONTHS, NO JOB', col: '#f6757a' }, { at: 1.4, s: 'FREELANCING TO STAY AFLOAT', col: '#f4f4f4' }] } },
+  obstacles: [
+    { x: 40, kind: 'pothole', h: 3, say: 'Interviews that went nowhere, autumn 2018. Jump the pothole.' },
+    { x: 262, kind: 'pothole', h: 3, say: 'One more failed interview before March 2019. Jump it, and the next job is just ahead.' },
+  ],
 });
 
 /* ───────── Kerala, 2018: the first job ───────── */
@@ -162,6 +167,14 @@ export function kerala() {
   }
   const l0 = lamp(x, c(70), B, 58); lights.push({ x: l0.x + PX0, y: l0.y, g: 'warm' });
   const l1 = lamp(x, c(420), B, 58); lights.push({ x: l1.x + PX0, y: l1.y, g: 'warm' });
+  { // A tender-coconut stall: elaneer, the drink that beats chai in the Kerala heat.
+    const X = c(318);
+    cart(x, X, B, 'ELANEER', '#38b764', '#a7f070');
+    R(x, '#8b5a2b', X + 4, B - 19, 34, 5);
+    [[8, 0], [14, 0], [20, 0], [26, 0], [32, 0], [11, -4], [17, -4], [23, -4], [29, -4], [20, -8]].forEach(([dx, dy]) => { disc(x, '#2f6b4f', X + dx, B - 21 + dy, 3); R(x, '#4fae58', X + dx - 1, B - 23 + dy, 2, 1); });
+    R(x, '#c0cbdc', X + 36, B - 24, 1, 6); R(x, '#8b9bb4', X + 35, B - 25, 3, 1);
+    hot.push({ x: 318, y: B - 36, w: 44, h: 36, say: 'Elaneer: tender coconut, cut open with one swing of a knife. The drink that beats chai in the Kerala heat.' });
+  }
   ground(x, play.w, B, LH, r, 'city');
 
   const TROP = ['#3f8fd0', '#8cc4e8', '#d6e8d8', '#fbe9c0'];

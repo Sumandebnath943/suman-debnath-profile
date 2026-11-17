@@ -32,9 +32,11 @@ export function floor() {
 
   { // Head office: his desk, and the boardroom upstairs.
     const [rx, ry] = wing(108, 184, 112, GLASS, 'BRAND MARKETING', '#3f5878', true);
-    R(x, '#ffe9a8', rx + 30, B - 108, 64, 12); R(x, DK, rx + 29, B - 109, 66, 1); R(x, DK, rx + 29, B - 96, 66, 1);
-    R(x, '#262b44', rx + 44, B - 105, 6, 9); R(x, '#262b44', rx + 45, B - 108, 4, 4); R(x, '#262b44', rx + 72, B - 105, 6, 9); R(x, '#262b44', rx + 73, B - 108, 4, 4);
-    R(x, '#8b5a2b', rx + 38, B - 99, 46, 2);
+    // The boardroom: one lit room set into the top band of glass, so the facade stays whole.
+    { const bx = rx + 30, by = B - 105, bw = 64, bh = 10;
+      R(x, DK, bx - 1, by - 1, bw + 2, bh + 2); R(x, '#ffe9a8', bx, by, bw, bh); R(x, '#fff6d6', bx, by, bw, 1); R(x, '#e8c98a', bx, by + bh - 2, bw, 2);
+      [12, 26, 40, 52].forEach((o, i) => { R(x, i % 2 ? '#3a2f2a' : '#262b44', bx + o, by + 2, 3, 3); R(x, i % 2 ? '#3a2f2a' : '#262b44', bx + o - 1, by + 5, 5, 3); });
+      R(x, '#8b5a2b', bx + 8, by + 7, 48, 2); R(x, '#a9743c', bx + 8, by + 7, 48, 1); }
     desk(x, rx + 8, ry + 24, 42, '#8b5a2b'); lcd(x, rx + 12, ry + 13, '#3b5dc9'); laptop(x, rx + 30, ry + 15);
     picture(x, rx + 60, ry + 6, 14, 10, '#ef7d57'); picture(x, rx + 78, ry + 6, 14, 10, '#41a6f6'); picture(x, rx + 96, ry + 6, 14, 10, '#ffcd75');
     shelf(x, rx + 112, ry + 5, 22, 29); plant(x, rx + 56, ry + 34, 1);
@@ -69,7 +71,15 @@ export function floor() {
     R(x, '#5a6988', hx + 12, hy + 26, 2, 14); R(x, '#5a6988', hx + 94, hy + 26, 2, 14);
     R(x, DK, hx - 1, hy - 1, 110, 28); R(x, '#1d2552', hx, hy, 108, 26); R(x, '#ef7d57', hx, hy, 30, 26); disc(x, '#ffcd75', hx + 15, hy + 13, 8);
     text(x, 'ADMISSIONS', hx + 36, hy + 4, '#f4f4f4'); text(x, 'OPEN', hx + 36, hy + 14, '#ffcd75');
-    hot.push({ x: 768, y: hy, w: 108, h: 26, say: 'A hoarding, which is what India calls a billboard. Print does not take hotfixes, so he proofs these himself.' });
+    hot.push({ x: 768, y: hy, w: 108, h: 26, say: 'A tri-vision hoarding: three faces on turning slats. Print does not take hotfixes, so he proofs these himself.' });
+    // Its three faces. The hoarding turns to the numbers while the print beat is on screen.
+    const face = (draw) => { const f = mk(108, 26); draw(f.x); return f.c; };
+    live.faces = [
+      face((g) => { R(g, '#1d2552', 0, 0, 108, 26); R(g, '#ef7d57', 0, 0, 30, 26); disc(g, '#ffcd75', 15, 13, 8); text(g, 'ADMISSIONS', 36, 4, '#f4f4f4'); text(g, 'OPEN', 36, 14, '#ffcd75'); }),
+      face((g) => { R(g, '#181425', 0, 0, 108, 26); R(g, '#ffcd75', 0, 0, 2, 26); text(g, '1,000+', 6, 2, '#ffcd75', 2); text(g, 'PIECES SIGNED OFF', 4, 18, '#f4f4f4'); }),
+      face((g) => { R(g, '#181425', 0, 0, 108, 26); R(g, '#a7f070', 0, 0, 2, 26); text(g, 'RS 30-40', 6, 2, '#a7f070', 2); text(g, 'LAKH A YEAR', 6, 18, '#f4f4f4'); }),
+    ];
+    live.hoard = { x: 768, y: hy };
   }
   { // Launches.
     const [rx, ry, rw] = wing(938, 190, 96, GLASS, 'LAUNCH ROOM', '#3a4a5e', true);
@@ -101,6 +111,17 @@ export function floor() {
   [[300, '#41a6f6'], [912, '#ef7d57'], [1340, '#a7f070']].forEach(([wx, col]) => scooter(x, c(wx), B, col));
   for (let wx = 1510; wx < 1900; wx += 12) R(x, '#243a4a', c(wx), B - 10, 2, 10);
   R(x, '#243a4a', c(1510), B - 10, 390, 1); R(x, '#3c5a6e', c(1510), B - 11, 390, 1);
+  { // The cutting-chai cycle: half a glass of tea, the fuel of every Pune office.
+    const X = c(1590);
+    disc(x, '#181425', X + 4, B - 5, 5); disc(x, '#5a6988', X + 4, B - 5, 4); disc(x, '#181425', X + 4, B - 5, 3);
+    disc(x, '#181425', X + 30, B - 5, 5); disc(x, '#5a6988', X + 30, B - 5, 4); disc(x, '#181425', X + 30, B - 5, 3);
+    seg(x, '#b13e53', X + 4, B - 5, X + 14, B - 14, 1); seg(x, '#b13e53', X + 14, B - 14, X + 26, B - 14, 1); seg(x, '#b13e53', X + 26, B - 14, X + 30, B - 5, 1); seg(x, '#b13e53', X + 14, B - 14, X + 18, B - 5, 1); seg(x, '#b13e53', X + 18, B - 5, X + 4, B - 5, 1);
+    R(x, '#262b44', X + 12, B - 16, 5, 1); seg(x, '#262b44', X + 26, B - 14, X + 28, B - 19, 1); R(x, '#262b44', X + 26, B - 20, 5, 1);
+    R(x, '#6a4320', X - 4, B - 19, 12, 2); R(x, '#8b9bb4', X - 2, B - 26, 8, 7); R(x, '#c0cbdc', X - 2, B - 26, 8, 1); R(x, '#5a6988', X + 6, B - 24, 2, 1); R(x, '#5a6988', X, B - 28, 4, 2);
+    for (let i = 0; i < 4; i++) { R(x, 'rgba(220,240,255,.7)', X - 4 + i * 3, B - 22, 2, 3); R(x, '#c8853a', X - 4 + i * 3, B - 21, 2, 2); }
+    person(x, X + 36, B - 24, { c: '#f4f4f4', h: '#262b44', f: -1, t: 12 }); R(x, '#3a4466', X + 36, B - 12, 6, 12);
+    hot.push({ x: 1586, y: B - 28, w: 48, h: 28, say: 'The cutting-chai cycle: half a glass of tea, the fuel of every office in Pune.' });
+  }
   ground(x, play.w, B, LH, r, 'city');
 
   return {
@@ -118,7 +139,17 @@ export function floor() {
         rim: night > 0.4 ? ['#9fb4ff', 0.3] : ['#ffd9a8', 0.18 + 0.25 * Math.max(gold, dawn)],
       };
     },
-    live({ x: g, sx, py, t }) {
+    live({ x: g, sx, py, t, beat, bt }) {
+      if (beat === 'print' && bt > 0.4) {                 // the hoarding's slats turn: ADMISSIONS OPEN > 1,000+ > RS 30-40 LAKH > ...
+        const k = (bt + 1.8) / 2.8, from = Math.floor(k) % 3, to = (from + 1) % 3, u = (k % 1) * 2.8;   // u: seconds into this face
+        const X0h = sx(live.hoard.x), Y0h = py + live.hoard.y;
+        for (let i = 0; i < 9; i++) {
+          const p = clamp((u - 2.2 - i * 0.04) / 0.28, 0, 1), f = p < 0.5 ? live.faces[from] : live.faces[to], w = Math.max(0, Math.round(12 * Math.abs(1 - 2 * p)));
+          R(g, '#0b0a16', X0h + i * 12, Y0h, 12, 26);
+          if (w > 0) g.drawImage(f, i * 12, 0, 12, 26, X0h + i * 12 + ((12 - w) >> 1), Y0h, w, 26);
+          if (i) R(g, '#0b0a16', X0h + i * 12, Y0h, 1, 26);
+        }
+      }
       live.web.forEach((s, i) => R(g, Math.sin(t * 2 + i * 1.3) > 0.6 ? '#a7f070' : '#8b9bb4', sx(s.x), py + s.y, 3, 1));
       for (let j = 0; j < 5; j++) R(g, Math.sin(t * (6 + j * 2) + j) > 0 ? '#a7f070' : '#1f4636', sx(live.rack.x) + (j % 2) * 12, py + live.rack.y + j * 5, 1, 1);
       R(g, '#f4f4f4', sx(live.press.x), py + live.press.y, 4 + Math.floor((t * 6) % 9), 2);
@@ -130,7 +161,6 @@ export function floor() {
       pibm: { x: 200, bot: B - 113, items: [{ at: 0.4, n: 8, suf: ' YEARS', sc: 2, col: '#ffcd75' }, { at: 1.1, s: 'REPORTS TO CHAIRMAN AND CEO', col: '#f4f4f4' }] },
       team: { x: 403, bot: B - 93, items: [{ at: 0.4, n: 21, suf: ' PEOPLE', sc: 2, col: '#ffcd75' }, { at: 1.1, s: '99% ON TIME FOR 6 YEARS', col: '#a7f070' }] },
       web: { x: 613, bot: B - 89, items: [{ at: 0.4, n: 50, suf: '+ WEBSITES', sc: 2, col: '#ffcd75' }, { at: 1.1, s: 'ORGANIC TRAFFIC +40-50%', col: '#a7f070' }] },
-      print: { x: 822, bot: B - 95, items: [{ at: 0.4, n: 1000, suf: '+ PIECES', sc: 2, col: '#ffcd75' }, { at: 1.2, s: 'RS 30-40 LAKH A YEAR', col: '#f4f4f4' }] },
       launch: { x: 1033, bot: B - 97, items: [{ at: 0.4, n: 20, suf: '+ LAUNCHES', sc: 2, col: '#ffcd75' }, { at: 1.1, s: 'FULL GO-TO-MARKET, EACH', col: '#f4f4f4' }] },
       decks: { x: 1243, bot: B - 89, items: [{ at: 0.4, n: 150, suf: '+ DECKS', sc: 2, col: '#ffcd75' }, { at: 1.2, s: '50-100 PIECES IN 3 DAYS', col: '#f4f4f4' }] },
       aiteam: { x: 1433, bot: B - 79, items: [{ at: 0.4, s: '2-3 HOURS', sc: 2, col: '#73eff7' }, { at: 1, s: 'SAVED EVERY DAY', col: '#f4f4f4' }] },
@@ -171,7 +201,7 @@ export function roof() {
     lights.push({ x: 346 + 17, y: B - 36, g: 'cool', always: 1, flicker: 6 });
   }
   // Four chests.
-  [['#e43b44', 0], ['#3b5dc9', 26], ['#38b764', 52], ['#c9a0ff', 78]].forEach(([band, o]) => chest(x, c(548 + o), B, band, false));
+  [['#e43b44', 0], ['#3b5dc9', 26], ['#38b764', 52], ['#c9a0ff', 78], ['#ffcd75', 104], ['#73eff7', 130]].forEach(([band, o]) => chest(x, c(530 + o), B, band, false));
   // The door to the next level.
   { const X = c(776); R(x, DK, X - 3, B - 54, 40, 54); R(x, '#d99a22', X - 2, B - 53, 38, 53); R(x, '#ffe08a', X - 2, B - 53, 38, 2); R(x, '#fff6c9', X + 2, B - 49, 30, 49); R(x, '#fffdf2', X + 6, B - 45, 22, 45);
     for (let i = 0; i < 5; i++) R(x, '#ffe9a8', X + 2 - i * 4, B - 2 + i, 30 + i * 8, 1);
@@ -198,7 +228,7 @@ export function roof() {
     },
     stations: {
       fit: { x: 363, bot: B - 52, items: [{ at: 0.4, s: 'FIT CHECK', sc: 2, col: '#a7f070' }, { at: 1, s: 'RUNS IN YOUR BROWSER', col: '#f4f4f4' }] },
-      tools: { x: 596, bot: B - 18, items: [{ at: 0.4, s: 'FOUR FREE TOOLS', sc: 2, col: '#ffcd75' }, { at: 1, s: 'NO SIGN-UP', col: '#f4f4f4' }] },
+      tools: { x: 604, bot: B - 18, items: [{ at: 0.4, s: 'SIX FREE CHESTS', sc: 2, col: '#ffcd75' }, { at: 1, s: 'NO SIGN-UP', col: '#f4f4f4' }] },
       contact: { x: 793, bot: B - 56, items: [{ at: 0.5, s: '5% DONE', sc: 2, col: '#ffcd75' }, { at: 1.3, s: '95% TO GO', col: '#f4f4f4' }] },
     },
   };

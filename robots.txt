@@ -56,4 +56,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: https://hiresumandebnath.houseofnamus.com/sitemap.xml
+Sitemap: https://hire.sumandebnath.houseofnamus.com/sitemap.xml

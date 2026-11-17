@@ -1,8 +1,8 @@
-/* Career Mode — preview of the opening scene */
+/* Career Mode — the page around the game: top bar, stage, dialogue box, logo and loading screen */
 :root {
   --ink: #181425;
   --night: #1f1b33;
-  --panel: rgba(24, 20, 37, 0.95);
+  --panel: rgba(24, 20, 37, 0.97);
   --line: #f4f4f4;
   --text: #e9edf7;
   --dim: #aab4cc;
@@ -10,10 +10,13 @@
   --gold-d: #b9772f;
   --coral: #ef7d57;
   --cyan: #73eff7;
+  --plum: #5d275d;
   --b: 3px;
-  --hud: 46px;
+  --hud: 48px;
+  --box: clamp(196px, 28vh, 252px);            /* the dialogue box under the scene */
   --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --pixel: 'Jersey 20', 'Courier New', monospace;
+  --script: 'Yellowtail', 'Brush Script MT', cursive;
 }
 
 * { box-sizing: border-box; }
@@ -23,24 +26,37 @@ h1, h2, p, ul, ol { margin: 0; }
 a { color: inherit; }
 .px { font-family: var(--pixel); font-weight: 400; letter-spacing: 0.03em; line-height: 1.1; }
 
-.skip { position: fixed; left: 12px; top: -80px; z-index: 50; padding: 10px 14px; background: var(--gold); color: var(--ink); font-weight: 700; }
+.skip { position: fixed; left: 12px; top: -80px; z-index: 120; padding: 10px 14px; background: var(--gold); color: var(--ink); font-weight: 700; }
 .skip:focus { top: 12px; }
+
+/* ───────── the logo: his name in script, CAREER MODE in big pixel letters under it ───────── */
+.script {
+  font-family: var(--script); font-weight: 400; letter-spacing: 0.01em; line-height: 1;
+  background: linear-gradient(180deg, #fff6c9 10%, #ffcd75 52%, #ef7d57 92%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(2px 2px 0 var(--plum)) drop-shadow(0 0 1px var(--ink));
+  transform: rotate(-4deg); transform-origin: left bottom;
+}
 
 /* ───────── top bar ───────── */
 .hud {
   position: fixed; inset: 0 0 auto 0; z-index: 20; height: var(--hud);
   display: flex; align-items: center; gap: 10px; padding: 0 clamp(10px, 2vw, 20px);
-  background: linear-gradient(rgba(24, 20, 37, 0.92), rgba(24, 20, 37, 0.6));
+  background: linear-gradient(rgba(24, 20, 37, 0.92), rgba(24, 20, 37, 0.62));
   border-bottom: 2px solid rgba(244, 244, 244, 0.16);
 }
-.hud-brand { display: flex; align-items: baseline; gap: 10px; text-decoration: none; margin-right: auto; white-space: nowrap; }
-.hud-mark { font-size: 22px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; text-shadow: 2px 2px 0 #5d275d; }
-.hud-name { font-weight: 700; font-size: 14px; color: var(--text); }
+.hud-brand { display: grid; justify-items: start; text-decoration: none; margin-right: auto; white-space: nowrap; line-height: 1; }
+.hud-script { font: 400 19px/1 var(--script); margin: 0 0 -3px 2px; }
+.hud-script { background: linear-gradient(180deg, #fff6c9, #ffcd75 60%, #ef7d57); -webkit-background-clip: text; background-clip: text; color: transparent; transform: rotate(-4deg); filter: drop-shadow(1px 1px 0 var(--plum)); }
+.hud-mark { font-size: 23px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.07em; text-shadow: 2px 2px 0 var(--plum); }
 .hud-where { font-size: 18px; color: var(--dim); white-space: nowrap; }
-@media (max-width: 1320px) { .hud-name { display: none; } }
-@media (max-width: 1100px) { #hud-chapter { display: none; } }
+@media (max-width: 1180px) { #hud-chapter { display: none; } }
 .hud-where b { display: inline-block; min-width: 3.4em; margin-left: 6px; padding: 1px 8px 2px; background: var(--gold); color: var(--ink); font-weight: 400; text-align: center; }
-.hud-coins { display: flex; align-items: center; gap: 6px; font-size: 20px; color: var(--gold); white-space: nowrap; }
+.hud-coins, .hud-ev { display: flex; align-items: center; gap: 6px; font-size: 20px; color: var(--gold); white-space: nowrap; }
+.hud-ev { color: var(--cyan); }
+.hud-ev b { font-weight: 400; }
+.hud-ev.is-ping { animation: ping 0.6s steps(3); }
+@keyframes ping { 50% { transform: scale(1.18); } }
+.ev-dot { width: 12px; height: 12px; background: var(--cyan); box-shadow: 0 0 0 2px #1d5a7a, inset -2px -2px 0 #3aa3c9; }
 .coin-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--gold); box-shadow: inset -2px -2px 0 #e8963c, 0 0 0 2px #8a4b1c; }
 .hud-btn {
   appearance: none; border: 2px solid rgba(244, 244, 244, 0.5); background: rgba(24, 20, 37, 0.7); color: var(--text);
@@ -52,35 +68,21 @@ a { color: inherit; }
 .hud-cta:hover, .hud-cta:focus-visible { background: #ffe08a; color: var(--ink); }
 .short { display: none; }
 
-/* ───────── the stage: one screen that stays put while you scroll ───────── */
+/* ───────── the stage: the scene on top, the dialogue box under it, nothing on top of the scene ───────── */
 .world { position: relative; }
-.stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--ink); }
-.scene-wrap { position: absolute; inset: 0; overflow: hidden; }
+.stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--ink); display: flex; flex-direction: column; }
+.scene-wrap { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; }
 #scene { position: absolute; left: 0; top: 0; display: block; image-rendering: pixelated; image-rendering: crisp-edges; touch-action: pan-y; cursor: pointer; }
 
-.controls {
-  position: absolute; right: 14px; bottom: 12px; max-width: min(46ch, 60vw); padding: 5px 10px 6px;
-  background: rgba(24, 20, 37, 0.78); color: var(--text); font-size: 17px; text-align: right;
-  transition: opacity 0.5s; pointer-events: none;
-}
-.controls.is-gone { opacity: 0; }
-
 .tip {
-  position: absolute; z-index: 5; max-width: 250px; padding: 8px 11px 9px; background: var(--line); color: var(--ink);
+  position: absolute; z-index: 5; max-width: 260px; padding: 8px 11px 9px; background: var(--line); color: var(--ink);
   font-size: 14px; font-weight: 600; line-height: 1.35; box-shadow: 0 0 0 3px var(--ink), 5px 5px 0 3px rgba(0, 0, 0, 0.35);
   opacity: 0; transform: translateY(6px); transition: opacity 0.18s, transform 0.18s; pointer-events: none;
 }
 .tip.is-on { opacity: 1; transform: none; }
 .tip b { display: block; font: 400 16px/1 var(--pixel); letter-spacing: 0.04em; color: #2b3a78; margin-bottom: 4px; }
 
-/* ───────── story panel ───────── */
-/* The panel is only as tall as the beat on screen, and narrow enough to leave the scenery free. */
-.panel {
-  position: absolute; z-index: 4; top: calc(var(--hud) + 14px); left: clamp(10px, 2.2vw, 36px);
-  width: clamp(290px, 28vw, 400px); display: flex; flex-direction: column; gap: 10px;
-  max-height: calc(100vh - var(--hud) - 28px); max-height: calc(100svh - var(--hud) - 28px);
-  filter: drop-shadow(5px 5px 0 rgba(0, 0, 0, 0.35));
-}
+/* ───────── the dialogue box ───────── */
 .win {
   background:
     linear-gradient(var(--line), var(--line)) var(--b) var(--b) / var(--b) var(--b) no-repeat,
@@ -91,96 +93,155 @@ a { color: inherit; }
   box-shadow: inset 0 0 0 var(--b) var(--line);
   clip-path: polygon(var(--b) 0, calc(100% - var(--b)) 0, calc(100% - var(--b)) var(--b), 100% var(--b), 100% calc(100% - var(--b)), calc(100% - var(--b)) calc(100% - var(--b)), calc(100% - var(--b)) 100%, var(--b) 100%, var(--b) calc(100% - var(--b)), 0 calc(100% - var(--b)), 0 var(--b), var(--b) var(--b));
 }
-.beat { position: relative; flex: 0 1 auto; min-height: 0; align-content: start; padding: 14px 16px 15px; display: grid; gap: 8px; overflow-y: auto; scrollbar-width: thin; }
-/* Only the active beat takes up room; the others sit on top of it while they fade. */
-.js .beat { position: absolute; top: 0; left: 0; right: 0; visibility: hidden; opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s, visibility 0s 0.2s; }
-.js .beat.is-active { position: relative; visibility: visible; opacity: 1; transform: none; transition: opacity 0.22s 0.05s, transform 0.22s 0.05s; }
-
-.beat-tag { font-size: 17px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; }
-.logo { display: block; width: min(100%, 372px); height: auto; image-rendering: pixelated; image-rendering: crisp-edges; margin: 2px 0 -2px -3px; }
-.beat h1 { font: 800 clamp(28px, 2.7vw, 38px)/1.05 var(--body); letter-spacing: -0.02em; color: #fff; }
-.beat h2 { font: 800 clamp(18px, 1.45vw, 21px)/1.22 var(--body); letter-spacing: -0.01em; color: #fff; text-wrap: balance; }
-.beat p, .beat li { font-size: clamp(14px, 1vw, 15px); line-height: 1.5; color: var(--text); }
+.panel {
+  position: relative; z-index: 4; flex: 0 0 var(--box); height: var(--box);
+  display: flex; flex-direction: column; gap: 6px; padding: 10px clamp(12px, 2vw, 28px) 9px;
+  background: linear-gradient(180deg, #221c38, var(--ink) 40%);
+  border-top: 3px solid var(--line); box-shadow: 0 -3px 0 var(--ink), inset 0 3px 0 rgba(255, 255, 255, 0.06);
+}
+.panel::before {                                    /* the little "speaker" tab, as in old RPG dialogue boxes */
+  content: ''; position: absolute; left: clamp(12px, 2vw, 28px); top: -11px; width: 18px; height: 8px;
+  background: var(--line); clip-path: polygon(0 100%, 50% 0, 100% 100%);
+}
+.beats { position: relative; flex: 1 1 auto; min-height: 0; }
+.beat {
+  position: relative; height: 100%; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #5a6988 transparent;
+  display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1.08fr) minmax(0, 0.8fr); align-content: start;
+  column-gap: clamp(16px, 2.2vw, 36px); row-gap: 5px; padding: 0 2px 2px;
+}
+.js .beat { position: absolute; inset: 0; visibility: hidden; opacity: 0; transform: translateY(6px); transition: opacity 0.2s, transform 0.2s, visibility 0s 0.2s; }
+.js .beat.is-active { visibility: visible; opacity: 1; transform: none; transition: opacity 0.24s 0.05s, transform 0.24s 0.05s; }
+.beat-tag { grid-column: 1 / -1; font-size: 17px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; }
+.beat.for-you .beat-tag::after { content: '★ For you'; margin-left: 10px; padding: 0 6px 1px; background: var(--cyan); color: var(--ink); letter-spacing: 0.04em; }
+.beat-main { grid-column: 1; display: grid; gap: 4px; align-content: start; }
+.beat > .proof { grid-column: 2; }
+.beat > .ev { grid-column: 3; display: grid; gap: 7px; align-content: start; }
+.beat:not(:has(> .proof)):not(:has(> .tools)) > .beat-main { grid-column: 1 / 3; }
+.beat h1 { margin: 0; }
+.beat h2 { font: 800 clamp(17px, 1.32vw, 21px)/1.22 var(--body); letter-spacing: -0.01em; color: #fff; text-wrap: balance; }
+.beat p, .beat li { font-size: clamp(13.5px, 0.98vw, 15px); line-height: 1.45; color: var(--text); }
+.beat .story { color: var(--dim); }
 .beat b { color: var(--gold); font-weight: 700; }
-.lead { font-size: clamp(15px, 1.1vw, 16.5px) !important; }
-.facts { list-style: none; padding: 0; display: grid; gap: 6px; }
-.facts li { position: relative; padding-left: 18px; }
-.facts li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 8px; height: 8px; background: var(--gold); box-shadow: 2px 2px 0 var(--gold-d); }
+.proof { list-style: none; padding: 0; display: grid; gap: 4px; align-content: start; }
+.proof li { position: relative; padding-left: 16px; }
+.proof li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 7px; height: 7px; background: var(--gold); box-shadow: 2px 2px 0 var(--gold-d); }
+
+/* The skills MIGI logs at each stop. */
+.skills { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.skills::before { content: 'MIGI logged'; flex-basis: 100%; font: 400 15px/1 var(--pixel); letter-spacing: 0.05em; text-transform: uppercase; color: var(--cyan); }
+.skills li { font: 400 15px/1 var(--pixel) !important; letter-spacing: 0.03em; padding: 3px 7px 4px; color: #d6f7fb !important; background: rgba(115, 239, 247, 0.1); box-shadow: inset 0 0 0 1px rgba(115, 239, 247, 0.45); }
+.beat.is-active .skills li { animation: logged 0.4s steps(3) both; }
+.beat.is-active .skills li:nth-child(2) { animation-delay: 0.12s; }
+.beat.is-active .skills li:nth-child(3) { animation-delay: 0.24s; }
+.beat.is-active .skills li:nth-child(4) { animation-delay: 0.36s; }
+.beat.is-active .skills li:nth-child(n + 5) { animation-delay: 0.48s; }
+@keyframes logged { from { opacity: 0; transform: translateY(4px); } }
 
 .migi {
-  display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 9px; align-items: start;
-  margin-top: 1px; padding: 7px 10px 8px 9px; background: rgba(115, 239, 247, 0.09); border-left: 3px solid var(--cyan);
-  font-size: clamp(13.5px, 0.95vw, 14.5px) !important; line-height: 1.45 !important; color: #d6f7fb !important;
+  display: grid; grid-template-columns: 22px minmax(0, 1fr); column-gap: 8px; align-items: start;
+  padding: 5px 8px 6px 7px; background: rgba(115, 239, 247, 0.07); border-left: 3px solid var(--cyan);
+  font-size: clamp(13px, 0.9vw, 14px) !important; line-height: 1.4 !important; color: #d6f7fb !important;
 }
-.migi::before { content: ''; grid-row: 1 / span 2; width: 28px; height: 36px; background: var(--migi-face, none) center / contain no-repeat; image-rendering: pixelated; }
-.migi-who { display: block; font-size: 16px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+.migi::before { content: ''; grid-row: 1 / span 2; width: 22px; height: 28px; background: var(--migi-face, none) center / contain no-repeat; image-rendering: pixelated; }
+.migi-who { font-size: 15px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.05em; margin-right: 4px; }
 
-.beat-nav { flex: none; display: flex; align-items: center; gap: 10px; }
-.count-row { display: flex; align-items: center; gap: 6px; }
-.mini { appearance: none; cursor: pointer; font-size: 15px; padding: 0 6px 1px; background: rgba(24, 20, 37, 0.8); color: var(--cyan); border: 0; text-decoration: underline; text-underline-offset: 2px; }
-.mini:hover, .mini:focus-visible { color: var(--gold); outline: none; }
-/* "Hide text": only the chapter buttons stay, and the whole scene is free. */
-.js.story-min .beat { display: none; }
-.pips { list-style: none; padding: 0; margin: 0 auto; display: flex; gap: 6px; }
-.pips button { display: block; width: 14px; height: 14px; padding: 0; border: 2px solid var(--line); background: rgba(24, 20, 37, 0.85); cursor: pointer; }
-.pips button[aria-current='true'] { background: var(--gold); border-color: var(--gold); }
-.pips button.is-done { background: var(--line); }
+/* The opening beat: the logo, the line, and MIGI asking who is reading. */
+.brand-logo { gap: 0; padding-top: 2px; }
+.brand-logo h1.script { font-size: clamp(30px, 2.6vw, 40px); margin: 0 0 -2px 6px; width: max-content; padding: 0 6px 4px 0; }
+.logo { display: block; width: min(100%, 372px); height: auto; image-rendering: pixelated; image-rendering: crisp-edges; margin: 0 0 0 -3px; }
+.lead { font-size: clamp(14.5px, 1.08vw, 16.5px) !important; color: #fff !important; }
+.hint { color: var(--dim) !important; font-size: 13.5px !important; margin-top: 6px; }
+.who-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* On wide screens the controls share the top line with the beat's tag, so the text gets the full height. */
+.beat-nav { position: absolute; z-index: 2; top: 8px; right: clamp(12px, 2vw, 28px); display: flex; align-items: center; gap: 12px; }
+.beat-tag { grid-column: 1 / 2; min-height: 34px; padding-top: 6px; }
+.nav-mid { display: flex; align-items: center; gap: 10px; }
+.pips { list-style: none; padding: 0; margin: 0; display: flex; gap: 6px; }
+.pips button { display: grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 2px solid var(--line); background: rgba(24, 20, 37, 0.85); cursor: pointer; font: 400 16px/1 var(--pixel); color: var(--text); }
+.pips button[aria-current='true'] { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.pips button.is-done { background: var(--line); color: var(--ink); }
 .pips button:hover, .pips button:focus-visible { border-color: var(--cyan); outline: none; }
 
 .btn {
-  appearance: none; border: 0; cursor: pointer; font-size: 21px; padding: 7px 16px 9px; white-space: nowrap; text-decoration: none;
+  appearance: none; border: 0; cursor: pointer; font-size: 20px; padding: 6px 15px 8px; white-space: nowrap; text-decoration: none;
   transition: transform 0.06s, box-shadow 0.06s;
 }
+.beat-nav .btn { font-size: 19px; padding: 4px 13px 6px; }
 .btn-gold { background: var(--gold); color: var(--ink); box-shadow: 0 0 0 3px var(--ink), 0 4px 0 3px var(--gold-d); }
 .btn-ghost { background: rgba(24, 20, 37, 0.92); color: var(--text); box-shadow: 0 0 0 3px var(--line), 0 4px 0 3px rgba(0, 0, 0, 0.5); }
 .btn:hover, .btn:focus-visible { filter: brightness(1.08); outline: none; }
 .btn:active { transform: translateY(3px); box-shadow: 0 0 0 3px var(--ink), 0 1px 0 3px var(--gold-d); }
 .btn[disabled] { opacity: 0.4; cursor: default; }
 
-.footer { padding: 28px clamp(16px, 4vw, 48px) 40px; color: var(--dim); font-size: 14px; display: grid; gap: 6px; background: var(--ink); border-top: 2px solid rgba(244, 244, 244, 0.14); }
+/* ───────── loading screen ───────── */
+.boot { display: none; }
+.booting .boot {
+  display: grid; place-items: center; position: fixed; inset: 0; z-index: 100; background: var(--ink);
+  background-image: radial-gradient(1px 1px at 20% 30%, #fff6e0 50%, transparent 51%), radial-gradient(1px 1px at 70% 20%, #fff6e0 50%, transparent 51%), radial-gradient(1px 1px at 85% 60%, #fff6e0 50%, transparent 51%), radial-gradient(1px 1px at 35% 75%, #fff6e0 50%, transparent 51%), linear-gradient(180deg, #1f2452, #181425 55%, #3b2347);
+  animation: boot-giveup 0s 8s forwards;            /* never trap anyone behind it */
+}
+.boot.is-out { opacity: 0; visibility: hidden; transition: opacity 0.45s, visibility 0s 0.45s; }
+@keyframes boot-giveup { to { opacity: 0; visibility: hidden; } }
+.boot-in { display: grid; justify-items: center; gap: 10px; padding: 24px; text-align: center; }
+.boot-script { font: 400 clamp(40px, 6vw, 64px)/1 var(--script); background: linear-gradient(180deg, #fff6c9 10%, #ffcd75 52%, #ef7d57 92%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(3px 3px 0 var(--plum)); transform: rotate(-4deg); padding: 0 10px 6px; margin-bottom: -14px; }
+.boot-mark { font-size: clamp(54px, 9vw, 104px); color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; text-shadow: 4px 4px 0 var(--plum), -2px -2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink); }
+.boot-bar { width: min(320px, 70vw); height: 16px; padding: 3px; background: var(--ink); box-shadow: 0 0 0 3px var(--line); margin-top: 12px; }
+.boot-bar i { display: block; height: 100%; width: 12%; background: repeating-linear-gradient(90deg, var(--gold) 0 10px, #ffe08a 10px 12px); transition: width 0.35s steps(6); }
+.boot-msg { font-size: 20px; color: var(--cyan); min-height: 1.2em; }
+.boot-tip { font-size: 14px; color: var(--dim); }
 
-/* ───────── phones and narrow windows: scene on top, story below ───────── */
+/* ───────── below the game ───────── */
+.more { max-width: 960px; margin: 0 auto; padding: 30px 18px 40px; }
+.more h2 { font: 800 clamp(20px, 2.6vw, 26px)/1.2 var(--body); color: #fff; margin-bottom: 14px; }
+.more ul { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.more a { display: grid; gap: 2px; padding: 12px 14px; text-decoration: none; border: 2px solid rgba(244, 244, 244, 0.2); background: rgba(244, 244, 244, 0.04); height: 100%; }
+.more a:hover, .more a:focus-visible { border-color: var(--gold); outline: none; }
+.more b { font: 400 21px/1.1 var(--pixel); letter-spacing: 0.03em; color: var(--gold); }
+.more span { font-size: 14px; color: var(--dim); }
+.footer { padding: 24px clamp(16px, 4vw, 48px) 36px; color: var(--dim); font-size: 14px; display: grid; gap: 6px; background: var(--ink); border-top: 2px solid rgba(244, 244, 244, 0.14); }
+
+/* ───────── phones and narrow windows: the scene on top, the dialogue box under it ───────── */
 @media (max-width: 820px), (max-aspect-ratio: 5/6) {
-  :root { --hud: 40px; }
+  :root { --hud: 44px; --box: 46svh; }
   .hud { gap: 6px; padding: 0 8px; }
-  .hud-name, #hud-chapter, #sound, .long { display: none; }
+  #hud-chapter, #sound, .long { display: none; }
   .short { display: inline; }
+  .hud-script { font-size: 15px; }
+  .hud-mark { font-size: 18px; letter-spacing: 0.05em; }
   .hud-where b { margin-left: 0; min-width: 0; padding: 1px 6px 2px; }
   .hud-where { font-size: 17px; }
-  .hud-mark { font-size: 17px; letter-spacing: 0.04em; }
-  .hud-coins { font-size: 17px; gap: 4px; }
-  .coin-dot { width: 10px; height: 10px; }
+  .hud-coins, .hud-ev { font-size: 17px; gap: 4px; }
+  .hud-lv { display: none; }
+  .coin-dot, .ev-dot { width: 10px; height: 10px; }
   .hud-btn { font-size: 15px; padding: 3px 6px 4px; }
-  .stage { display: flex; flex-direction: column; }
-  /* The scene gets more than half the screen; the story scrolls inside its own box below. */
-  .scene-wrap { position: relative; inset: auto; flex: 0 0 55svh; }
-  .controls { display: none; }
-  .panel {
-    position: relative; top: auto; left: auto; width: auto; flex: 1 1 auto; min-height: 0; max-height: none; overflow: hidden;
-    padding: 8px 8px 10px; gap: 8px; filter: none; border-top: 3px solid var(--line); background: var(--ink);
-  }
-  .js .beat.is-active { flex: 1 1 auto; }
-  .beat { padding: 10px 12px 11px; gap: 6px; }
+  .panel { padding: 9px 10px 8px; gap: 6px; }
+  .beat { grid-template-columns: minmax(0, 1fr); row-gap: 7px; padding-right: 4px; }
+  .beat > .proof, .beat > .ev, .beat > .beat-main, .beat:not(:has(> .proof)):not(:has(> .tools)) > .beat-main { grid-column: 1; }
   .beat-tag { font-size: 15px; }
-  .beat h1 { font-size: 26px; }
   .beat h2 { font-size: 17px; }
-  .beat p, .beat li { font-size: 14px; line-height: 1.45; }
-  .lead { font-size: 15px !important; }
-  .migi { font-size: 13px !important; padding: 6px 9px 7px 8px; grid-template-columns: 24px minmax(0, 1fr); column-gap: 8px; }
-  .migi::before { width: 24px; height: 31px; }
-  .migi-who { font-size: 14px; }
+  .beat p, .beat li { font-size: 14px; }
+  .skills li { font-size: 14px !important; }
+  .brand-logo h1.script { font-size: 30px; }
   .logo { width: min(100%, 280px); }
   .btn { font-size: 18px; padding: 5px 12px 7px; }
-  .js.story-min .scene-wrap { flex: 1 1 auto; }
-  .js.story-min .panel { flex: none; }
+  .beat-nav .btn { font-size: 17px; padding: 4px 10px 6px; }
+  .count { display: none; }
+  .beat-nav { position: static; flex: none; justify-content: space-between; }
+  .beat-tag { grid-column: 1; }
+  .pips { gap: 5px; }
+  .pips button { width: 21px; height: 21px; font-size: 15px; }
 }
+@media (max-width: 380px) { .hud-ev { display: none; } }
 
 /* ───────── without JavaScript the page is simply the story, top to bottom ───────── */
-.no-js .stage { position: static; height: auto; overflow: visible; }
+.no-js .stage { position: static; height: auto; overflow: visible; display: block; }
 .no-js .scene-wrap, .no-js .beat-nav, .no-js .logo { display: none; }
-.no-js .panel { position: static; width: auto; max-width: 720px; margin: 70px auto 30px; padding: 0 16px; display: block; filter: none; }
-.no-js .beat { margin-bottom: 14px; }
+.no-js .panel { height: auto; max-width: 860px; margin: 70px auto 30px; padding: 0 16px; display: block; background: none; border: 0; box-shadow: none; }
+.no-js .panel::before { display: none; }
+.no-js .beat { height: auto; margin-bottom: 22px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .js .beat, .js .beat.is-active, .tip, .controls { transition: none; }
+  .js .beat, .js .beat.is-active, .tip, .boot.is-out { transition: none; }
+  .beat.is-active .skills li { animation: none; }
 }

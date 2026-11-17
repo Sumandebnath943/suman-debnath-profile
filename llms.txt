@@ -2,7 +2,7 @@
 
 > Suman Debnath is a Senior Brand Marketing Manager in Pune, India, with 9+ years in brand and digital marketing. Since 2024 he has also built and shipped 26+ AI products on his own, including MIGI (46 autonomous agents) and PentaCMD-47M (a language model trained from scratch). He is looking for senior brand marketing, product marketing, AI product marketing and AI product management roles, remote or with relocation.
 
-This file describes https://hiresumandebnath.houseofnamus.com/, "Career Mode": a one-page résumé you walk through as a small pixel-art game. Everything below is also stated in plain HTML on that page; no JavaScript is needed to read it. The full portfolio, with case studies and a notebook, is https://sumandebnath.houseofnamus.com/ and its own file is https://sumandebnath.houseofnamus.com/llms.txt.
+This file describes https://hire.sumandebnath.houseofnamus.com/, "Career Mode": a one-page résumé you walk through as a small pixel-art game. Everything below is also stated in plain HTML on that page; no JavaScript is needed to read it. The full portfolio, with case studies and a notebook, is https://sumandebnath.houseofnamus.com/ and its own file is https://sumandebnath.houseofnamus.com/llms.txt.
 
 Last updated: 2026-11-17.
 
@@ -62,6 +62,8 @@ This is Suman Debnath the brand marketing leader and AI-native product builder b
 - [Qdex-1.5B](https://sumandebnath.houseofnamus.com/llms/qdex-1.5b): a coding model that runs on an ordinary laptop.
 - [AEGIS VAULT](https://aegisnote.houseofnamus.com/): a zero-knowledge encrypted notepad.
 - [That One Crawler](https://thatonecrawler.houseofnamus.com/): a free SEO and AI-search audit with 53 checks.
+- [Slide Doctor](https://slidedoctor.houseofnamus.com/): a free presentation audit.
+- [D-PE.ai](https://d-pe.houseofnamus.com/): a prompt-engineering workspace that interviews you before it writes the prompt.
 - [Banking Co-pilot](https://sumandebnath.houseofnamus.com/banking/rm-copilot): policy-cited answers for bank relationship managers, with 38 security tests.
 - [PixelVille: Next Dimension](https://sumandebnath.houseofnamus.com/games/pixelville-next-dimension) and [NUNO](https://sumandebnath.houseofnamus.com/games/nuno): browser games.
 - [ROASmind](https://sumandebnath.houseofnamus.com/projects/roasmind): an AI-native marketing operating system, in private testing.
@@ -75,7 +77,7 @@ This is Suman Debnath the brand marketing leader and AI-native product builder b
 
 ## Contact
 
-- Email: __CONTACT_EMAIL__
+- Email: hire.sumandebnath@gmail.com
 - Résumé (PDF): https://sumandebnath.houseofnamus.com/Suman_Debnath_Resume.pdf
 - LinkedIn: https://linkedin.com/in/suman-debnath-a528653a1
 - GitHub: https://github.com/Sumandebnath943
