@@ -73,7 +73,7 @@
 .plain .scene-wrap, .plain .beat-nav, .plain .who-chips, .plain .proof.todo, .plain .boot, .plain #sound, .plain .hud-stats { display: none; }
 .plain .skills, .plain .beat-tag { padding-right: 0; }
 /* On phones, plain text drops story mode: every card, quest log and MIGI line is shown in full. */
-.plain .story-only, .plain .quest .migi-q, .plain .quest .sheet-close, .no-js .story-only { display: none !important; }
+.plain .story-only, .plain .quest .migi-q, .plain .quest .q-head, .no-js .story-only { display: none !important; }
 .plain .panel, .no-js .panel { position: static; }
 .plain .quest, .no-js .quest { display: grid; position: static; }
 .plain .say, .no-js .say { height: auto; overflow: visible; }

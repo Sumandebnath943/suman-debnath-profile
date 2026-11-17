@@ -70,9 +70,10 @@ const fx = { rewind: 0, dir: -1, blend: 0, snap: false, title: '', titleT: 0, lv
 const BLEND = 1.1, TITLE = 2.2;
 const MAXV = 300;                                       // Suman's top speed, in world pixels a second: he runs, he never teleports
 let teleport = false, hintShown = false, warnT = 0;
-// Story mode, for phones only: the game is one screen; taps and Next walk Suman from stop to stop instead of scrolling.
+// Story mode, for phones only: the game is one screen with the dialogue docked under the street. Swiping the page
+// walks Suman, exactly as scrolling does on a desktop, and a tap on the scene jumps. There is no Next button to compete.
 const smallScreen = window.matchMedia('(max-width: 820px), (max-aspect-ratio: 5/6)');
-let story = false, storyIdx = 0, storyX = X0;
+let story = false, sizeKey = '';
 const keys = { l: false, r: false };
 const parts = [];
 const flown = new Set();
@@ -96,9 +97,15 @@ function resize() {
   const b = wrap.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
   if (!b.width || !b.height) return;
   // Remember where Suman stands, so a resize (or hiding the text on a phone) does not move him.
-  const wasStory = story;
   story = smallScreen.matches;
-  const keepX = !wasStory && started > 0.5 && !document.documentElement.classList.contains('plain') ? X0 + clamp((window.scrollY - trackTop) / trackLen, 0, 1) * (X1 - X0) : null;
+  if (story) {
+    // A phone's address bar fires resize events while the page is being flicked. If nothing that matters changed,
+    // leave the scroll alone: a scrollTo here would stop the fling dead.
+    const k = [b.width, b.height, dpr, $('#hud').getBoundingClientRect().bottom - b.top, $('#panel').getBoundingClientRect().top - b.top].join();
+    if (k === sizeKey) return;
+    sizeKey = k;
+  } else sizeKey = '';
+  const keepX = started > 0.5 && !document.documentElement.classList.contains('plain') ? X0 + clamp((window.scrollY - trackTop) / trackLen, 0, 1) * (X1 - X0) : null;
   let s = Math.max(2, Math.round(b.height / 216));
   const whole = (v) => Math.abs(v * dpr - Math.round(v * dpr)) < 0.01;
   if (!whole(s)) { if (whole(s + 1) && b.height / (s + 1) >= 168) s += 1; else if (s > 2 && whole(s - 1)) s -= 1; }
@@ -110,22 +117,19 @@ function resize() {
   Fs = H - 20; anchor = narrow ? 0.4 : 0.44; sunFrac = narrow ? 0.66 : 0.72;   // the whole scene is free now: Suman walks a little left of centre
   hudW = Math.ceil(Math.max(0, $('#hud').getBoundingClientRect().bottom - b.top) / S) + 3;
   // Scroll pixels per world pixel. A mouse-wheel notch now moves Suman about a third of a building, not a whole one.
-  RATIO = narrow ? S * 0.9 : S * 0.78;
+  // On a phone one ordinary swipe (about two thirds of the screen) carries Suman to the next stop.
+  RATIO = story ? S * 1.15 : narrow ? S * 0.9 : S * 0.78;
+  if (story) {
+    // The street is lifted so Suman walks just above the dialogue dock.
+    const dockTop = $('#panel').getBoundingClientRect().top - b.top;
+    Fs = Math.min(H - 20, Math.floor(dockTop / S) - 8);
+  }
   trackLen = (X1 - X0) * RATIO;
   worldEl.style.height = Math.round(stage.offsetHeight + trackLen) + 'px';
   trackTop = worldEl.getBoundingClientRect().top + window.scrollY;
   cam0 = X0 - W * anchor;
   tmp = mk(W, H); wb = mk(W, H); fade = mk(W, H);
   scenes.forEach((s) => { s.sky = mk(W, H); s.skyKey = ''; s.haze = s.haze || '#ffd28a'; });
-  if (story) {
-    // One screen, no scroll track. The street is lifted so Suman walks just above the dialogue dock.
-    const dockTop = $('#panel').getBoundingClientRect().top - b.top;
-    Fs = Math.min(H - 20, Math.floor(dockTop / S) - 8);
-    worldEl.style.height = Math.round(stage.offsetHeight) + 'px';
-    if (!wasStory) { storyIdx = Math.max(0, active); storyX = beats[storyIdx].x; teleport = started > 0.5; }
-    return;
-  }
-  if (wasStory && started > 0.5) { kb = null; window.scrollTo(0, beatY(Math.max(0, active))); return; }
   if (keepX !== null) { kb = null; window.scrollTo(0, trackTop + (keepX - X0) * RATIO); }
 }
 
@@ -135,10 +139,10 @@ const goTo = (i) => {
   i = clamp(i, 0, beats.length - 1);
   const far = Math.abs(beats[i].x - P.x) > 600;
   if (far) teleport = true;
-  if (story) { storyIdx = i; storyX = beats[i].x; document.documentElement.classList.remove('sheet-open'); return; }   // walk there; no scrolling
+  if (story) document.documentElement.classList.remove('sheet-open');
   window.scrollTo({ top: beatY(i), behavior: reduced || far ? 'auto' : 'smooth' });
 };
-const storyStep = (d) => goTo(d > 0 ? (storyIdx >= beats.length - 1 ? 0 : nextFor(storyIdx)) : storyIdx - 1);
+const step = (d) => goTo(d > 0 ? (active === beats.length - 1 ? 0 : nextFor(active)) : active - 1);
 
 function setActive(i) {
   if (i === active) return;
@@ -179,7 +183,7 @@ function setNextLabel() {
   nextBtn.textContent = i === 0 ? (sm ? 'Start ▶' : 'Start walking ▶') : i === beats.length - 1 ? (sm ? 'Again ↺' : 'Back to the start ↺') : forYou && !sm ? 'Next for you ▶' : 'Next ▶';
 }
 smallScreen.addEventListener && smallScreen.addEventListener('change', setNextLabel);
-// Story mode's own controls: the chapter bars along the top and the quest-log button in the dock.
+// Story mode's own controls: the chapter line along the top and the quest-log tab on the speech card.
 const storyBar = $('#story-bar'), questBtn = $('#quest-btn');
 function syncStoryUI(i) {
   const b = beats[i];
@@ -190,7 +194,9 @@ function syncStoryUI(i) {
   });
   if (questBtn) {
     const n = SKILLS[i].length;
-    questBtn.innerHTML = `<span>${b.el.dataset.quest || 'Quest log'}</span><b>${n ? `+${n} skill${n > 1 ? 's' : ''}` : ''} ▴</b>`;
+    questBtn.querySelector('b').textContent = n ? `+${n}` : '';
+    questBtn.setAttribute('aria-label', `Open the quest log${n ? `: ${n} skill${n > 1 ? 's' : ''} logged here` : ''}`);
+    questBtn.classList.toggle('is-first', i === 0);       // the first stop's log is where the reader says why they are here
   }
   document.documentElement.classList.remove('sheet-open');
 }
@@ -232,7 +238,12 @@ function update(dt) {
   } else kb = null;
 
   const sc = clamp((window.scrollY - trackTop) / trackLen, 0, 1);
-  const target = story ? storyX : X0 + sc * (X1 - X0);
+  const target = X0 + sc * (X1 - X0);
+  if (story) {
+    const root = document.documentElement;
+    if (sc > 0.0015) root.classList.add('walked');                                // the coach mark has done its job
+    root.classList.toggle('past-game', window.scrollY > trackTop + trackLen + 4); // the floating bar turns solid over the questions
+  }
   const prev = P.x;
   // Suman follows the scroll, but never faster than he can run, so every scene has time to arrive.
   // Only a chapter button or a dragged scrollbar (a very long way) moves him in one go.
@@ -261,7 +272,7 @@ function update(dt) {
       warnT = 0.4;
       if (!hintShown && started > 0.6) {
         hintShown = true;
-        showTip(story ? '<b>MIGI says:</b>Jump! Tap the JUMP button.' : '<b>MIGI says:</b>Jump! Press Space or the up arrow, or tap the scene.', (P.x - camX) * S, (Fs - 40) * S);
+        showTip(story ? '<b>MIGI says:</b>Jump! Tap anywhere on the scene.' :'<b>MIGI says:</b>Jump! Press Space or the up arrow, or tap the scene.', (P.x - camX) * S, (Fs - 40) * S);
       }
     }
     if (!(prev < o.x && P.x >= o.x)) continue;
@@ -725,35 +736,52 @@ function boot() {
     btn.addEventListener('click', () => goTo(first.i));
     li.appendChild(btn); pipsEl.appendChild(li);
   });
-  nextBtn.addEventListener('click', () => (story ? storyStep(1) : goTo(active === beats.length - 1 ? 0 : nextFor(active))));
-  prevBtn.addEventListener('click', () => (story ? storyStep(-1) : goTo(active - 1)));
+  nextBtn.addEventListener('click', () => step(1));
+  prevBtn.addEventListener('click', () => step(-1));
 
-  // Story mode (phones): chapter bars, the jump button, and the quest log that opens as a sheet.
+  // Story mode (phones): the chapter line, the quest log that opens as a sheet, and the ⋯ menu in the top bar.
   if (storyBar) chapters.forEach((ch) => {
     const first = beats.find((b) => b.ch === ch), seg = document.createElement('button');
     seg.type = 'button'; seg.className = 'seg'; seg.setAttribute('aria-label', `Go to ${first.chName}`);
     seg.addEventListener('click', () => goTo(first.i));
     storyBar.appendChild(seg);
   });
-  const jumpBtn = $('#jump-btn');
-  if (jumpBtn) jumpBtn.addEventListener('click', () => jump());
   const docEl = document.documentElement, setSheet = (on) => { docEl.classList.toggle('sheet-open', on); if (questBtn) questBtn.setAttribute('aria-expanded', String(on)); };
   if (questBtn) questBtn.addEventListener('click', () => setSheet(!docEl.classList.contains('sheet-open')));
   const dim = $('#sheet-dim');
   if (dim) dim.addEventListener('click', () => setSheet(false));
-  beats.forEach((b) => {                                 // each quest log gets MIGI's line and a close button, for the sheet
+  beats.forEach((b) => {                                 // each quest log gets a header with a close button, and MIGI's line, for the sheet
     const q = b.el.querySelector('.quest'), m = b.el.querySelector('.say .migi');
     if (!q) return;
-    if (m) { const c = m.cloneNode(true); c.classList.add('migi-q'); q.appendChild(c); }
-    q.insertAdjacentHTML('beforeend', '<button type="button" class="btn btn-ghost px sheet-close">Close ▾</button>');
-    q.querySelector('.sheet-close').addEventListener('click', () => setSheet(false));
+    const name = (q.querySelector('.beat-tag b') || {}).textContent || '';
+    q.insertAdjacentHTML('afterbegin', '<div class="q-head"><div><p class="q-kick px"><span></span><em>★ For you</em></p><p class="q-title"></p></div><button type="button" class="q-x px" aria-label="Close the quest log">✕</button></div>');
+    q.querySelector('.q-kick span').textContent = b.el.dataset.quest && name ? `Quest log · ${name}` : 'Quest log';
+    q.querySelector('.q-title').textContent = b.el.dataset.quest || name || 'Quest log';
+    q.querySelector('.q-x').addEventListener('click', () => setSheet(false));
+    if (m) {
+      const row = document.createElement('div');
+      row.className = 'migi-q';
+      row.innerHTML = '<i aria-hidden="true"></i><p><b class="px">MIGI</b></p>';
+      m.childNodes.forEach((n) => { if (!(n.nodeType === 1 && n.classList.contains('migi-who'))) row.lastChild.appendChild(n.cloneNode(true)); });
+      q.appendChild(row);
+    }
   });
+  const moreBtn = $('#more'), moreMenu = $('#more-menu');
+  const setMore = (on) => { if (!moreMenu) return; moreMenu.hidden = !on; moreBtn.setAttribute('aria-expanded', String(on)); };
+  if (moreBtn && moreMenu) {
+    moreBtn.addEventListener('click', () => setMore(moreMenu.hidden));
+    moreMenu.addEventListener('click', (e) => { const p = e.target.closest('[data-proxy]'); setMore(false); if (p) $('#' + p.dataset.proxy).click(); });
+    document.addEventListener('click', (e) => { if (!moreMenu.hidden && !e.target.closest('#more-menu, #more')) setMore(false); });
+    window.addEventListener('scroll', () => { if (!moreMenu.hidden) setMore(false); }, { passive: true });
+  }
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') { setMore(false); setSheet(false); } });
   syncStoryUI(Math.max(0, active));
   soundBtn.addEventListener('click', () => {
     soundOn = !soundOn;
     soundBtn.setAttribute('aria-pressed', String(soundOn));
     soundBtn.setAttribute('aria-label', soundOn ? 'Sound is on' : 'Sound is off');
     soundBtn.title = soundOn ? 'Sound is on' : 'Sound is off';
+    const ms = $('[data-proxy="sound"] span'); if (ms) ms.textContent = soundOn ? 'on' : 'off';
     beep(660, 0.08); beep(990, 0.12, 'square', 0.035, 0, 0.08);
   });
 
@@ -784,8 +812,7 @@ function boot() {
     const lx = mx + camX - cur.ox, ly = my - (Fs - 160);
     const h = cur.hot.find((o) => lx >= o.x && lx <= o.x + o.w && ly >= o.y && ly <= o.y + o.h);
     if (h) { showTip(`<b>MIGI points out:</b>${h.say}`, cx, cy); M.talk = 1.6; beep(740, 0.06, 'triangle'); if (h.jump) jump(); return; }
-    if (story) { storyStep(mx < W / 3 ? -1 : 1); return; }   // phones: tap right to walk on, left to go back
-    jump();
+    jump();                                              // phones too: swiping walks, a tap jumps
   });
 
   window.addEventListener('resize', resize);
