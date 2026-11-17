@@ -82,9 +82,9 @@ function country(o) {
         if (n >= 8) plate(ctx, 'MAR 2019', b + 26, Fs - 50, '#a7f070');
       }
     },
-    over({ ctx, W, t, u, narrow }) {
-      if (o.gap || !o.route) return;                 // a route line across the top of the screen
-      const [a, b] = o.route, w = narrow ? Math.min(120, W - textW(a) - textW(b) - 30) : 90, x0 = Math.round(narrow ? (W - w) / 2 : W * 0.72 - w / 2), y = narrow ? 26 : 30;
+    over({ ctx, W, t, u, narrow, hudW = 0 }) {
+      if (o.gap || !o.route) return;                 // a route line across the top of the screen, just under the top bar
+      const [a, b] = o.route, w = narrow ? Math.min(120, W - textW(a) - textW(b) - 30) : 90, x0 = Math.round(narrow ? (W - w) / 2 : W * 0.72 - w / 2), y = Math.max(narrow ? 26 : 30, hudW + 10);
       plate(ctx, a, x0 - textW(a) / 2 - 8, y - 6, '#f4f4f4'); plate(ctx, b, x0 + w + textW(b) / 2 + 8, y - 6, '#ffcd75');
       R(ctx, '#181425', x0 - 1, y - 1, w + 2, 4);
       for (let X = 0; X < w; X += 4) R(ctx, X / w <= u ? '#ffcd75' : '#5a6988', x0 + X, y, 2, 2);

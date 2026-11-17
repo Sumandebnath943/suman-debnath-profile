@@ -228,6 +228,35 @@ export const logo = (word = 'CAREER MODE', sc = 3) => {
   return L.c;
 };
 
+/* The stacked crest: CAREER over a bigger MODE on a dark ribbon plate, letters banded like a sunset.
+   a and b are the pixel scales of the two words; u is the unit for the plate and the gap between them
+   (the gap is where "Suman Debnath" crosses in script). */
+const SUNSET_BANDS = [['#fff6c9', 0, 0.28], ['#ffe08a', 0.28, 0.5], ['#ffb84a', 0.5, 0.72], ['#ef7d57', 0.72, 1]];
+const banded = (word, sc) => {
+  const w = textW(word, sc), h = 7 * sc, c = mk(w, h);
+  text(c.x, word, 0, 0, '#fff', sc);
+  c.x.globalCompositeOperation = 'source-atop';
+  SUNSET_BANDS.forEach(([col, y0, y1]) => R(c.x, col, 0, Math.round(h * y0), w, Math.ceil(h * (y1 - y0))));
+  return c.c;
+};
+export const crest = (a = 2, b = 3, u = 2) => {
+  const aw = textW('CAREER', a), bw = textW('MODE', b);
+  const W = Math.max(aw, bw) + u * 8, gap = u * 7, H = u * 4 + 7 * a + gap + 7 * b + u * 4, c = mk(W, H), x = c.x;
+  R(x, INK, 0, 0, W, H);                                         // the plate
+  R(x, '#2b1f4a', u, u, W - u * 2, H - u * 2);
+  R(x, '#3a2a5e', u, u, W - u * 2, u);
+  R(x, '#5d275d', u, H - u * 2, W - u * 2, u);
+  R(x, '#ef7d57', 0, u * 3, u, H - u * 6); R(x, '#ef7d57', W - u, u * 3, u, H - u * 6);   // ribbon edges
+  const ay = u * 3, by = ay + 7 * a + gap;
+  const outA = mk(aw + 2, 7 * a + 2); text(outA.x, 'CAREER', 1, 1, INK, a);
+  [[-1, 0], [1, 0], [0, 1], [0, -1]].forEach(([dx, dy]) => x.drawImage(outA.c, (W - aw) / 2 - 1 + dx, ay - 1 + dy));
+  x.drawImage(banded('CAREER', a), (W - aw) / 2, ay);
+  const shB = mk(bw + 2, 7 * b + 2); text(shB.x, 'MODE', 1, 1, '#3b1d4a', b);
+  x.drawImage(shB.c, (W - bw) / 2 - 1 + Math.max(1, b >> 1), by - 1 + Math.max(1, b >> 1));
+  x.drawImage(banded('MODE', b), (W - bw) / 2, by);
+  return c.c;
+};
+
 /* ───────── Suman ─────────
    The head and torso are hand-placed pixels. The limbs are a small rig: two-bone
    legs with inverse kinematics and swinging arms, snapped to eight frames. */

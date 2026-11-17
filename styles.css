@@ -16,8 +16,7 @@
   --plum: #5d275d;
   --b: 3px;
   --hud: 60px;
-  --box: clamp(222px, 31vh, 280px);            /* the dialogue box under the scene */
-  --head: 44px;                                /* the box's header line: chapter tag and controls */
+  --box: clamp(240px, 33vh, 296px);            /* the dialogue box under the scene */
   --gut: clamp(16px, 2.4vw, 36px);
   --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --pixel: 'Jersey 20', 'Courier New', monospace;
@@ -50,10 +49,20 @@ a { color: inherit; }
   box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
 }
 .hud::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: var(--rule); }
-.hud-brand { justify-self: start; display: grid; justify-items: start; gap: 1px; padding: 4px 6px 2px 0; text-decoration: none; white-space: nowrap; line-height: 1; }
-.hud-script { font: 400 20px/1.05 var(--script); padding: 0 6px 2px 2px; background: linear-gradient(180deg, #fff6c9, #ffcd75 60%, #ef7d57); -webkit-background-clip: text; background-clip: text; color: transparent; transform: rotate(-4deg); transform-origin: left bottom; filter: drop-shadow(1px 1px 0 var(--plum)); }
-.hud-mark { font-size: 24px; line-height: 0.9; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; text-shadow: 2px 2px 0 var(--plum); }
-.hud-brand:hover .hud-mark, .hud-brand:focus-visible .hud-mark { color: #ffe08a; }
+/* The stacked crest (drawn by js/crest.js), with his name in script crossing the gap between CAREER and MODE. */
+.crest-wrap { position: relative; display: inline-grid; place-items: center; }
+.crest { display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
+.crest-script {
+  position: absolute; left: 50%; top: 41%; transform: translate(-50%, -50%) rotate(-6deg); padding: 0 4px 3px;
+  font: 400 15px/1 var(--script); color: #fff; white-space: nowrap; pointer-events: none;
+  text-shadow: 2px 2px 0 var(--coral), -1px -1px 0 var(--ink), 1px 1px 0 var(--ink), 1px -1px 0 var(--ink), -1px 1px 0 var(--ink);
+}
+.crest-big .crest-script { font-size: 58px; text-shadow: 4px 4px 0 var(--coral), -2px -2px 0 var(--ink), 2px 2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink); }
+.crest-fallback { display: none; font-size: 22px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; }
+.no-js .crest-wrap { display: none; }
+.no-js .crest-fallback { display: inline; }
+.hud-brand { justify-self: start; display: flex; align-items: center; padding: 4px 22px 4px 10px; text-decoration: none; }
+.hud-brand:hover .crest, .hud-brand:focus-visible .crest { filter: brightness(1.12); }
 .hud-brand:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 
 .hud-stats {
@@ -117,45 +126,82 @@ a { color: inherit; }
   clip-path: polygon(var(--b) 0, calc(100% - var(--b)) 0, calc(100% - var(--b)) var(--b), 100% var(--b), 100% calc(100% - var(--b)), calc(100% - var(--b)) calc(100% - var(--b)), calc(100% - var(--b)) 100%, var(--b) 100%, var(--b) calc(100% - var(--b)), 0 calc(100% - var(--b)), 0 var(--b), var(--b) var(--b));
 }
 
-/* ───────── the dialogue box: a header line (chapter, controls), then two columns ───────── */
+/* ───────── the dialogue box: a speech card on the left, a quest log on the right ─────────
+   Suman speaks on a light card with his portrait and a name tag (as in Persona or Hades);
+   the quest log beside it ticks off what he did, and the skills it proved. */
 .panel {
   position: relative; z-index: 4; flex: 0 0 var(--box); height: var(--box);
-  padding: 0 var(--gut) 14px;
-  background: var(--box-bg);
-  box-shadow: 0 -3px 0 var(--line), 0 -6px 0 var(--ink), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-.panel::before {                                    /* the "speaker" notch, as in old RPG dialogue boxes */
-  content: ''; position: absolute; left: calc(var(--gut) + 10px); top: -12px; width: 16px; height: 8px;
-  background: var(--line); clip-path: polygon(0 100%, 50% 0, 100% 100%);
-}
-.panel::after {                                     /* the line under the header */
-  content: ''; position: absolute; left: var(--gut); right: var(--gut); top: var(--head); height: 2px; background: var(--rule);
+  padding: 22px var(--gut) 16px;
+  background: linear-gradient(180deg, #16122a, #0e0b18 60%);
+  box-shadow: 0 -2px 0 rgba(244, 244, 244, 0.1);
 }
 .beats { position: relative; height: 100%; }
 .beat {
-  position: relative; height: 100%; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #5a6988 transparent;
-  display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.28fr); grid-template-rows: var(--head) auto;
-  column-gap: clamp(24px, 3.6vw, 64px); row-gap: 14px; align-content: start; padding-bottom: 4px;
+  position: relative; height: 100%;
+  display: grid; grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr); gap: 18px;
 }
 .js .beat { position: absolute; inset: 0; visibility: hidden; opacity: 0; transform: translateY(6px); transition: opacity 0.2s, transform 0.2s, visibility 0s 0.2s; }
 .js .beat.is-active { visibility: visible; opacity: 1; transform: none; transition: opacity 0.24s 0.05s, transform 0.24s 0.05s; }
-.beat-tag { grid-column: 1 / -1; align-self: center; display: flex; align-items: center; gap: 10px; font-size: 17px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.07em; padding-right: 520px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.beat.for-you .beat-tag::after { content: '★ For you'; flex: none; padding: 1px 7px 2px; background: var(--cyan); color: var(--ink); letter-spacing: 0.04em; }
-.col-a, .col-b { display: grid; gap: 10px; align-content: start; min-width: 0; }
-.beat-main { display: grid; gap: 6px; }
-.beat h1 { margin: 0; }
-.beat h2 { font: 800 clamp(18px, 1.4vw, 22px)/1.22 var(--body); letter-spacing: -0.01em; color: #fff; text-wrap: balance; }
-.beat p, .beat li { font-size: clamp(14px, 1.02vw, 15.5px); line-height: 1.5; color: var(--text); }
-.beat .story { color: var(--dim); text-wrap: pretty; }
-.beat b { color: var(--gold); font-weight: 700; }
-.proof { list-style: none; padding: 0; display: grid; gap: 6px; align-content: start; }
-.proof li { position: relative; padding-left: 18px; }
-.proof li::before { content: ''; position: absolute; left: 1px; top: 0.52em; width: 7px; height: 7px; background: var(--gold); box-shadow: 2px 2px 0 var(--gold-d); }
 
-/* The skills MIGI logs at each stop. */
-.skills { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.skills::before { content: 'MIGI logged'; margin-right: 2px; font: 400 15px/1 var(--pixel); letter-spacing: 0.06em; text-transform: uppercase; color: var(--cyan); }
-.skills li { font: 400 15px/1 var(--pixel) !important; letter-spacing: 0.03em; padding: 4px 8px 5px; color: #d6f7fb !important; background: rgba(115, 239, 247, 0.08); box-shadow: inset 0 0 0 1px rgba(115, 239, 247, 0.4); }
+/* The speech card. */
+.say {
+  position: relative; min-width: 0;
+  display: grid; align-content: start; gap: 7px;
+  padding: 20px 26px 16px calc(var(--pf) + 36px);
+  background: #f4f1e8; color: var(--ink);
+  box-shadow: 0 0 0 3px var(--ink), 0 0 0 6px var(--line), 7px 7px 0 6px rgba(0, 0, 0, 0.35);
+  --pf: clamp(104px, 9vw, 132px);
+}
+.say .pf {                                          /* Suman's portrait, from his sprite for that year */
+  position: absolute; left: 16px; bottom: 14px; top: 22px; width: var(--pf);
+  background: var(--pf-img, none) center bottom / 100% auto no-repeat, linear-gradient(#5b3f87, #e2766a 60%, #ffd28a);
+  image-rendering: pixelated; box-shadow: 0 0 0 3px var(--ink);
+}
+.say .name {                                        /* the slanted name tag */
+  position: absolute; left: calc(var(--pf) + 24px); top: 0; transform: translateY(-50%) skewX(-12deg);
+  padding: 4px 14px 6px; background: var(--coral); color: #fff; font: 400 19px/1 var(--pixel); letter-spacing: 0.1em; text-transform: uppercase;
+  box-shadow: 0 0 0 3px var(--ink);
+}
+.say .name > span { display: inline-block; transform: skewX(12deg); }
+.say h1, .say h2 { margin: 0; font: 800 clamp(19px, 1.5vw, 24px)/1.2 var(--body); letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
+.say .story { font-size: clamp(14px, 1.02vw, 15.5px); line-height: 1.5; color: #4a4560; text-wrap: pretty; }
+.say .migi {
+  display: flex; align-items: flex-start; gap: 8px; margin-top: 2px;
+  font-size: clamp(13px, 0.92vw, 14px); line-height: 1.45; color: #1d5a7a;
+}
+.say .migi::before { content: ''; flex: none; width: 18px; height: 23px; background: var(--migi-face, none) center / contain no-repeat; image-rendering: pixelated; }
+.say .migi-who { font-size: 15px; color: #1d6f9c; letter-spacing: 0.05em; margin-right: 2px; }
+.say a, .say .inline { color: #b13e53; font-weight: 700; }
+
+/* The quest log. */
+.quest {
+  position: relative; min-width: 0; overflow: hidden;
+  display: grid; grid-template-rows: auto 1fr auto; gap: 8px;
+  padding: 12px 18px 12px;
+  background: #1d1838; box-shadow: 0 0 0 3px var(--line), 0 0 0 6px var(--ink), 7px 7px 0 6px rgba(0, 0, 0, 0.35);
+}
+.quest { overflow-y: auto; scrollbar-width: thin; scrollbar-color: #5a6988 transparent; }
+@media (max-width: 1180px) { .beat { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.beat-tag {
+  display: flex; align-items: center; gap: 10px; min-width: 0; padding: 0 214px 8px 0; border-bottom: 2px solid #3a3363;
+  font-size: 17px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.beat-tag b { color: var(--gold); font-weight: 400; overflow: hidden; text-overflow: ellipsis; }
+.beat.for-you .beat-tag::after { content: '★ For you'; flex: none; padding: 1px 7px 2px; background: var(--cyan); color: var(--ink); letter-spacing: 0.04em; }
+.proof { list-style: none; padding: 0; margin: 0; display: grid; gap: 5px; align-content: start; }
+.proof li { position: relative; padding-left: 27px; font-size: clamp(13.5px, 0.98vw, 15px); line-height: 1.45; color: var(--text); }
+.proof li::before { content: '✓'; position: absolute; left: 0; top: 2px; display: grid; place-items: center; width: 17px; height: 17px; background: #38b764; color: var(--ink); font: 400 15px/1 var(--pixel); }
+.proof li.fail::before { content: '✗'; background: #e43b44; color: #fff; }
+.proof.todo li::before { content: ''; background: transparent; box-shadow: inset 0 0 0 2px var(--dim); }
+.proof b { color: var(--gold); font-weight: 700; }
+.quest a, .quest .inline { color: var(--cyan); text-underline-offset: 2px; }
+.quest a.btn { color: var(--ink); text-decoration: none; }
+.quest a.btn.btn-ghost { color: var(--text); }
+
+/* The skills MIGI logs here, along the bottom of the quest log, clear of the Back and Next keys. */
+.skills { list-style: none; padding: 0 168px 0 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; align-self: end; }
+.skills::before { content: '+ Skills'; margin-right: 2px; font: 400 15px/1 var(--pixel); letter-spacing: 0.06em; text-transform: uppercase; color: var(--cyan); }
+.skills li { font: 400 15px/1 var(--pixel); letter-spacing: 0.03em; padding: 4px 8px 5px; color: #d6f7fb; background: rgba(115, 239, 247, 0.08); box-shadow: inset 0 0 0 1px rgba(115, 239, 247, 0.4); }
 .beat.is-active .skills li { animation: logged 0.4s steps(3) both; }
 .beat.is-active .skills li:nth-child(2) { animation-delay: 0.12s; }
 .beat.is-active .skills li:nth-child(3) { animation-delay: 0.24s; }
@@ -163,49 +209,41 @@ a { color: inherit; }
 .beat.is-active .skills li:nth-child(n + 5) { animation-delay: 0.48s; }
 @keyframes logged { from { opacity: 0; transform: translateY(4px); } }
 
-.migi {
-  display: grid; grid-template-columns: 22px minmax(0, 1fr); column-gap: 10px; align-items: start; justify-self: start; max-width: 62ch;
-  padding: 6px 12px 7px 8px; background: rgba(115, 239, 247, 0.06); box-shadow: inset 2px 0 0 var(--cyan);
-  font-size: clamp(13px, 0.92vw, 14px) !important; line-height: 1.45 !important; color: #d6f7fb !important;
-}
-.migi::before { content: ''; grid-row: 1 / span 2; width: 22px; height: 28px; background: var(--migi-face, none) center / contain no-repeat; image-rendering: pixelated; }
-.migi-who { font-size: 15px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.05em; margin-right: 4px; }
+/* Buttons inside the quest log: the six chests, the contact actions, the one-off calls to action. */
+.quest .cta-row { margin: 0; display: flex; gap: 10px; align-self: start; }
+.tools, .cta-grid { display: grid; gap: 9px; align-content: start; padding-bottom: 42px; }
+.tools { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tools .btn, .cta-grid .btn { width: 100%; font-size: 17px; padding: 7px 10px 8px; white-space: normal; text-align: center; line-height: 1.05; min-height: 38px; }
+.who-chips { display: flex; flex-wrap: wrap; gap: 8px; align-self: end; padding-right: 168px; }
 
-/* The opening beat: the logo on the left; the line and MIGI's question on the right. */
-.brand-logo { gap: 0; align-content: start; }
-.brand-logo h1.script { font-size: clamp(30px, 2.5vw, 40px); margin: 0 0 -4px 6px; width: max-content; padding: 0 8px 4px 0; }
-.logo { display: block; width: min(100%, 372px); height: auto; image-rendering: pixelated; image-rendering: crisp-edges; margin: 0 0 0 -3px; }
-.lead { font-size: clamp(15px, 1.12vw, 17px) !important; color: #fff !important; max-width: 60ch; }
-.hint { color: var(--dim) !important; font-size: 13.5px !important; }
-.who { display: grid; gap: 8px; }
-.beat-title .col-b { gap: 7px; }
-.who-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-
-/* The controls, on the header line at the right. */
-.beat-nav { position: absolute; z-index: 2; top: 0; right: var(--gut); height: var(--head); display: flex; align-items: center; gap: 10px; }
-.nav-mid { display: flex; align-items: center; gap: 10px; }
-.pips { list-style: none; padding: 0; margin: 0; display: flex; gap: 5px; }
-.pips button { display: grid; place-items: center; width: 24px; height: 24px; padding: 0 0 2px; border: 2px solid rgba(244, 244, 244, 0.55); background: transparent; cursor: pointer; font: 400 16px/1 var(--pixel); color: var(--text); }
+/* The controls: chapter pips in the quest log's header, Back and Next at its bottom right. */
+.beat-nav { position: absolute; inset: 22px var(--gut) 16px; pointer-events: none; }
+.beat-nav > * { pointer-events: auto; position: absolute; right: 18px; display: flex; align-items: center; gap: 8px; }
+.nav-mid { top: 10px; }
+.nav-keys { bottom: 12px; }
+.pips { list-style: none; padding: 0; margin: 0; display: flex; gap: 4px; }
+.pips button { display: grid; place-items: center; width: 21px; height: 21px; padding: 0 0 2px; border: 2px solid rgba(244, 244, 244, 0.5); background: transparent; cursor: pointer; font: 400 15px/1 var(--pixel); color: var(--text); }
 .pips button[aria-current='true'] { background: var(--gold); border-color: var(--gold); color: var(--ink); }
 .pips button.is-done { background: rgba(244, 244, 244, 0.85); border-color: transparent; color: var(--ink); }
 .pips button:hover, .pips button:focus-visible { border-color: var(--cyan); outline: none; }
-.count { font-size: 16px; color: var(--dim); min-width: 4.4em; text-align: center; }
+.count { font-size: 15px; color: var(--dim); min-width: 3.6em; text-align: right; }
 
-/* Buttons: flat pixel blocks with a shade along the bottom edge. */
+/* Buttons: flat pixel blocks. */
 .btn {
   appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  border: 2px solid transparent; cursor: pointer; font-size: 19px; line-height: 1; padding: 7px 15px 9px; white-space: nowrap; text-decoration: none;
-  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.22); transition: transform 0.06s, background-color 0.12s, border-color 0.12s, color 0.12s;
+  border: 2px solid transparent; cursor: pointer; font-size: 19px; line-height: 1; padding: 7px 15px 8px; white-space: nowrap; text-decoration: none;
+  transition: transform 0.06s, background-color 0.12s, border-color 0.12s, color 0.12s;
 }
 .btn-gold { background: var(--gold); border-color: var(--gold); color: var(--ink); }
 .btn-gold:hover, .btn-gold:focus-visible { background: #ffe08a; border-color: #ffe08a; }
 .btn-ghost { background: rgba(244, 244, 244, 0.04); border-color: rgba(244, 244, 244, 0.6); color: var(--text); }
 .btn-ghost:hover, .btn-ghost:focus-visible { border-color: var(--gold); color: var(--gold); }
 .btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
-.btn:active { transform: translateY(2px); box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.22); }
+.btn:active { transform: translateY(2px); }
 .btn[disabled] { opacity: 0.35; cursor: default; }
 .btn[disabled]:hover { border-color: rgba(244, 244, 244, 0.6); color: var(--text); }
-.beat-nav .btn { font-size: 17px; padding: 4px 12px 6px; }
+.nav-keys .btn { font-size: 17px; padding: 4px 12px 5px; min-width: 34px; }
 
 /* ───────── loading screen ───────── */
 .boot { display: none; }
@@ -217,8 +255,7 @@ a { color: inherit; }
 .boot.is-out { opacity: 0; visibility: hidden; transition: opacity 0.45s, visibility 0s 0.45s; }
 @keyframes boot-giveup { to { opacity: 0; visibility: hidden; } }
 .boot-in { display: grid; justify-items: center; gap: 10px; padding: 24px; text-align: center; }
-.boot-script { font: 400 clamp(40px, 6vw, 64px)/1 var(--script); background: linear-gradient(180deg, #fff6c9 10%, #ffcd75 52%, #ef7d57 92%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(3px 3px 0 var(--plum)); transform: rotate(-4deg); padding: 0 10px 6px; margin-bottom: -14px; }
-.boot-mark { font-size: clamp(54px, 9vw, 104px); color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; text-shadow: 4px 4px 0 var(--plum), -2px -2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink); }
+.crest-big { margin-bottom: 8px; }
 .boot-bar { width: min(320px, 70vw); height: 16px; padding: 3px; background: var(--ink); box-shadow: 0 0 0 3px var(--line); margin-top: 12px; }
 .boot-bar i { display: block; height: 100%; width: 12%; background: repeating-linear-gradient(90deg, var(--gold) 0 10px, #ffe08a 10px 12px); transition: width 0.35s steps(6); }
 .boot-msg { font-size: 20px; color: var(--cyan); min-height: 1.2em; }
@@ -255,26 +292,31 @@ a { color: inherit; }
   .stat-year, .stat-lv, .stat small, .stat .of, .hud-icon, .long { display: none; }
   .stat { font-size: 17px; padding: 0 8px; gap: 5px; }
   .short { display: inline; }
-  .hud-script { font-size: 16px; }
-  .hud-mark { font-size: 19px; letter-spacing: 0.06em; }
+  .hud-brand { padding: 2px 6px 2px 0; }
+  .hud-brand .crest { width: 62px !important; height: auto !important; }
+  .hud-brand .crest-script { font-size: 12px; }
   .coin-dot, .ev-dot { width: 9px; height: 9px; }
   .hud-actions { gap: 6px; }
   .hud-btn { font-size: 16px; height: 30px; padding: 0 8px 2px; }
-  .panel { padding: 0 var(--gut) 8px; display: flex; flex-direction: column; }
-  .panel::after { display: none; }
+  /* On a phone the speech card sits above the quest log, and the two scroll together inside the box. */
+  .panel { padding: 16px var(--gut) 8px; display: flex; flex-direction: column; gap: 8px; }
   .beats { flex: 1 1 auto; min-height: 0; height: auto; }
-  .beat { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; row-gap: 10px; padding: 12px 2px 6px; }
+  .beat { grid-template-columns: minmax(0, 1fr); grid-auto-rows: max-content; align-content: start; gap: 14px; overflow-y: auto; padding: 8px 8px 10px; scrollbar-width: thin; }
+  .say { --pf: 64px; padding: 18px 14px 12px calc(var(--pf) + 24px); min-height: 106px; overflow: visible; }
+  .say .pf { left: 10px; top: 14px; bottom: auto; height: 76px; }
+  .say .name { left: calc(var(--pf) + 18px); font-size: 16px; padding: 3px 10px 5px; }
+  .say h1, .say h2 { font-size: 17px; }
+  .say .story, .proof li { font-size: 14px; }
+  .quest { padding: 10px 12px 12px; overflow: visible; }
   .beat-tag { padding-right: 0; font-size: 15px; white-space: normal; }
-  .beat h2 { font-size: 17px; }
-  .beat p, .beat li { font-size: 14px; }
-  .skills li { font-size: 14px !important; }
-  .brand-logo h1.script { font-size: 30px; }
-  .logo { width: min(100%, 280px); }
-  .btn { font-size: 17px; padding: 6px 12px 8px; }
-  .beat-nav { position: static; height: auto; flex: none; justify-content: space-between; padding-top: 8px; box-shadow: 0 -2px 0 var(--rule); }
-  .beat-nav .btn { font-size: 16px; padding: 4px 10px 6px; }
+  .skills, .who-chips { padding-right: 0; }
+  .skills li { font-size: 14px; }
+  .tools, .cta-grid { padding-bottom: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .btn { font-size: 17px; padding: 6px 12px 7px; }
+  .beat-nav { position: static; flex: none; display: flex; justify-content: space-between; align-items: center; padding-top: 8px; box-shadow: 0 -2px 0 var(--rule); pointer-events: auto; }
+  .beat-nav > * { position: static; }
+  .nav-keys .btn { font-size: 16px; padding: 4px 10px 5px; }
   .count { display: none; }
-  .pips { gap: 4px; }
   .pips button { width: 22px; height: 22px; font-size: 15px; }
   .game-end p { font-size: 15px; }
 }
@@ -283,10 +325,11 @@ a { color: inherit; }
 /* ───────── without JavaScript the page is simply the story, top to bottom ───────── */
 .no-js .stage { position: static; height: auto; overflow: visible; display: block; }
 .no-js .scene-wrap, .no-js .beat-nav, .no-js .logo, .no-js .hud-stats, .no-js .hud-icon { display: none; }
-.no-js .panel { height: auto; max-width: 980px; margin: 76px auto 30px; padding: 0 16px; background: none; box-shadow: none; }
-.no-js .panel::before, .no-js .panel::after { display: none; }
-.no-js .beat { height: auto; grid-template-rows: auto; margin-bottom: 26px; }
-.no-js .beat-tag { padding-right: 0; }
+.no-js .panel { height: auto; max-width: 1080px; margin: 76px auto 30px; padding: 0 16px; background: none; box-shadow: none; }
+.no-js .beat { height: auto; margin-bottom: 30px; }
+.no-js .beat-tag, .no-js .skills, .no-js .who-chips { padding-right: 0; }
+.no-js .say { padding-left: 26px; }
+.no-js .tools, .no-js .cta-grid { padding-bottom: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   .js .beat, .js .beat.is-active, .tip, .boot.is-out, .btn, .more a { transition: none; }
