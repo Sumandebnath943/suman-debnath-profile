@@ -50,7 +50,7 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Jersey+20&family=Yellowtail&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Jersey+20&family=Yellowtail&family=Galada&family=Hind+Siliguri:wght@700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="ui.css" />
 
@@ -180,13 +180,21 @@
       <span class="hud-script">Suman Debnath</span>
       <span class="hud-mark px">Career Mode</span>
     </a>
-    <p class="hud-where px" aria-live="polite"><span id="hud-chapter">Chapter 1 of 6: Kolkata</span> <b id="hud-year">Today</b></p>
-    <p class="hud-ev px" title="Skills MIGI has logged with evidence so far"><i class="ev-dot" aria-hidden="true"></i><span class="long">Evidence </span><b id="hud-ev">0</b>/<span id="hud-ev-total">0</span></p>
-    <p class="hud-coins px" title="Your level, and the coins you have collected"><span class="hud-lv">LV <b id="hud-lv">1</b></span><i class="coin-dot" aria-hidden="true"></i><b id="hud-coins">0</b>/<span id="hud-coins-total">0</span></p>
-    <button class="hud-btn px" id="sound" type="button" aria-pressed="false">Sound off</button>
-    <button class="hud-btn px" id="plain" type="button" aria-pressed="false"><span class="long">Plain text</span><span class="short">Text</span></button>
-    <a class="hud-btn px" href="https://sumandebnath.houseofnamus.com/Suman_Debnath_Resume.pdf" target="_blank" rel="noopener"><span class="long">Résumé</span><span class="short">PDF</span></a>
-    <button class="hud-btn hud-cta px" type="button" data-open="compose"><span class="long">Email Suman</span><span class="short">Email</span></button>
+    <!-- One framed status panel, like a game's HUD: the year, the skills MIGI has logged, level and coins. -->
+    <div class="hud-stats px" role="group" aria-label="Your progress" aria-live="polite">
+      <span class="stat stat-year" title="Where you are in the story"><small>Year</small><b id="hud-year">Today</b></span>
+      <span class="stat stat-ev" title="Skills MIGI has logged with evidence so far"><i class="ev-dot" aria-hidden="true"></i><b id="hud-ev">0</b><span class="of">/<span id="hud-ev-total">0</span></span><small class="long">skills</small></span>
+      <span class="stat stat-lv" title="Your level"><small>LV</small><b id="hud-lv">1</b></span>
+      <span class="stat stat-coins" title="Coins collected"><i class="coin-dot" aria-hidden="true"></i><b id="hud-coins">0</b><span class="of">/<span id="hud-coins-total">0</span></span></span>
+    </div>
+    <div class="hud-actions">
+      <button class="hud-btn hud-icon px" id="sound" type="button" aria-pressed="false" aria-label="Sound is off" title="Sound is off">
+        <svg viewBox="0 0 12 12" width="18" height="18" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M1 4h2v4H1zM3 3h1v6H3zM4 2h1v8H4zM5 1h1v10H5z"/><path class="snd-on" fill="currentColor" d="M8 4h1v4H8zM10 2h1v8h-1z"/><path class="snd-off" fill="currentColor" d="M7 4h1v1H7zM8 5h1v1H8zM9 6h1v1H9zM10 7h1v1h-1zM10 4h1v1h-1zM9 5h1v1H9zM8 6h1v1H8zM7 7h1v1H7z"/></svg>
+      </button>
+      <button class="hud-btn px" id="plain" type="button" aria-pressed="false"><span class="long">Plain text</span><span class="short">Text</span></button>
+      <a class="hud-btn px hide-sm" href="https://sumandebnath.houseofnamus.com/Suman_Debnath_Resume.pdf" target="_blank" rel="noopener">Résumé</a>
+      <button class="hud-btn hud-cta px" type="button" data-open="compose"><span class="long">Email Suman</span><span class="short">Email</span></button>
+    </div>
   </header>
 
   <main id="world" class="world">
@@ -199,495 +207,372 @@
       <!-- The story sits in a dialogue box under the street, so nothing covers the scene. -->
       <section class="panel" id="panel" aria-label="The story">
         <div class="beats">
-        <!-- ═════ Chapter 1: Kolkata ═════ -->
-        <article class="beat beat-title is-active" data-s="kolkata" data-x="110" data-id="title" data-year="Today" data-c="1" data-ch="Chapter 1 of 6: Kolkata" data-for="brand ai founder">
+<!-- ═════ Chapter 1: Kolkata ═════ -->
+<article class="beat beat-title is-active" data-c="1" data-ch="Chapter 1 of 6: Kolkata" data-for="brand ai founder" data-id="title" data-s="kolkata" data-x="110" data-year="Today">
           <p class="beat-tag px">A résumé you can play</p>
-          <div class="beat-main brand-logo">
-            <h1 class="script">Suman Debnath</h1>
-            <canvas class="logo" id="logo" role="img" aria-label="Career Mode"></canvas>
-          </div>
-          <div class="proof">
-            <p class="lead">Senior Brand Marketing Manager in Pune, India. For 9+ years I have built brands, teams and launches, and since 2024 I have also shipped 26+ AI products on my own.</p>
-            <p class="hint">Scroll or swipe to walk. Press Space or tap the scene to jump.</p>
-          </div>
-          <div class="ev who" role="group" aria-label="Tell MIGI what you are looking for">
-            <p class="migi"><span class="migi-who px">MIGI:</span> I am agent 46 of his 46. I log every skill he proves as you walk. What are you here for?</p>
-            <div class="who-chips">
-              <button type="button" class="chip px" data-who="brand">A marketing hire</button>
-              <button type="button" class="chip px" data-who="ai">An AI hire</button>
-              <button type="button" class="chip px" data-who="founder">Something built</button>
-              <button type="button" class="chip px" data-who="curious">Just looking</button>
-            </div>
-          </div>
+          <div class="col-a"><div class="beat-main brand-logo">
+<h1 class="script">Suman Debnath</h1>
+<canvas aria-label="Career Mode" class="logo" id="logo" role="img"></canvas>
+</div></div>
+          <div class="col-b"><div class="proof">
+<p class="lead">Senior Brand Marketing Manager in Pune, India. For 9+ years I have built brands, teams and launches, and since 2024 I have also shipped 26+ AI products on my own.</p>
+<p class="hint">Scroll or swipe to walk. Press Space or tap the scene to jump.</p>
+</div><div aria-label="Tell MIGI what you are looking for" class="ev who" role="group">
+<p class="migi"><span class="migi-who px">MIGI:</span> I log every skill he proves as you walk. What are you here for?</p>
+<div class="who-chips">
+<button class="chip px" data-who="brand" type="button">A marketing hire</button>
+<button class="chip px" data-who="ai" type="button">An AI hire</button>
+<button class="chip px" data-who="founder" type="button">Something built</button>
+<button class="chip px" data-who="curious" type="button">Just looking</button>
+</div>
+</div></div>
         </article>
-
-        <article class="beat" data-s="kolkata" data-x="200" data-id="short" data-year="Today" data-c="1" data-ch="Chapter 1 of 6: Kolkata" data-for="brand ai founder">
+<article class="beat" data-c="1" data-ch="Chapter 1 of 6: Kolkata" data-for="brand ai founder" data-id="short" data-s="kolkata" data-x="200" data-year="Today">
           <p class="beat-tag px">The short version</p>
-          <div class="beat-main">
-            <h2>Here is what I bring, in four lines.</h2>
-            <p class="story" id="who-line">The rest of the walk is the evidence for each one.</p>
-          </div>
-          <ul class="proof">
-            <li><b>Brand leadership:</b> 8 years running brand marketing for a multi-brand business-school group, reporting to its Chairman and its CEO.</li>
-            <li><b>Team and delivery:</b> a 21-person design, web and digital team, with 99% of projects on time for six years.</li>
-            <li><b>Marketing range:</b> 20+ launches, 50+ websites, 1,000+ print and digital pieces and ₹40–60 lakh a year in budgets.</li>
-            <li><b>AI building:</b> 26+ AI products shipped solo, a 46-agent system and a language model trained from scratch.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Brand strategy</li><li>Team leadership</li><li>Go-to-market</li><li>AI product building</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>Here is what I bring, in four lines.</h2>
+<p class="story" id="who-line">The rest of the walk is the evidence for each one.</p>
+</div><ul class="skills"><li>Brand strategy</li><li>Team leadership</li><li>Go-to-market</li><li>AI product building</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li><b>Brand leadership:</b> 8 years running brand marketing for a multi-brand business-school group, reporting to its Chairman and its CEO.</li>
+<li><b>Team and delivery:</b> a 21-person design, web and digital team, with 99% of projects on time for six years.</li>
+<li><b>Marketing range:</b> 20+ launches, 50+ websites, 1,000+ print and digital pieces and ₹40–60 lakh a year in budgets.</li>
+<li><b>AI building:</b> 26+ AI products shipped solo, a 46-agent system and a language model trained from scratch.</li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="kolkata" data-x="292" data-id="tutor" data-year="2009" data-c="1" data-ch="Chapter 1 of 6: Kolkata" data-lv="2" data-for="brand">
+<article class="beat" data-c="1" data-ch="Chapter 1 of 6: Kolkata" data-for="brand" data-id="tutor" data-lv="2" data-s="kolkata" data-x="292" data-year="2009">
           <p class="beat-tag px">Chapter 1 · Kolkata · 2009</p>
-          <div class="beat-main">
-            <h2>I learned English late, and it taught me how persuasion works.</h2>
-            <p class="story">In 2009 I could not write one correct English sentence. A tutor made me like the language before he fixed my grammar, and two years later I earned a star mark.</p>
-          </div>
-          <ul class="proof">
-            <li>The lesson I still use in every campaign: make people care before you ask them to remember.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Audience-first messaging</li><li>Persuasive writing</li></ul>
-            <p class="migi"><span class="migi-who px">MIGI:</span> I was built in 2026, so I am here as a hologram.</p>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I learned English late, and it taught me how persuasion works.</h2>
+<p class="story">In 2009 I could not write one correct English sentence. A tutor made me like the language before he fixed my grammar, and two years later I earned a star mark.</p>
+</div><ul class="skills"><li>Audience-first messaging</li><li>Persuasive writing</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>The lesson I still use in every campaign: make people care before you ask them to remember.</li>
+</ul><p class="migi"><span class="migi-who px">MIGI:</span> I was built in 2026, so I am here as a hologram.</p></div>
         </article>
-
-        <article class="beat" data-s="kolkata" data-x="566" data-id="lambo" data-year="2013" data-c="1" data-ch="Chapter 1 of 6: Kolkata" data-lv="3" data-for="brand">
+<article class="beat" data-c="1" data-ch="Chapter 1 of 6: Kolkata" data-for="brand" data-id="lambo" data-lv="3" data-s="kolkata" data-x="566" data-year="2013">
           <p class="beat-tag px">Chapter 1 · Kolkata · my first audience</p>
-          <div class="beat-main">
-            <h2>As a teenager I grew a Facebook page to 82,000+ followers, with no budget.</h2>
-            <p class="story">World of Lamborghini was a supercar page I ran from this bedroom.</p>
-          </div>
-          <ul class="proof">
-            <li><b>82,000+</b> followers, all organic.</li>
-            <li>One post reached <b>677,503</b> people.</li>
-            <li>Content calendar, community and page analytics, years before anyone paid me for them.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Social media growth</li><li>Content strategy</li><li>Community building</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>As a teenager I grew a Facebook page to 82,000+ followers, with no budget.</h2>
+<p class="story">World of Lamborghini was a supercar page I ran from this bedroom.</p>
+</div><ul class="skills"><li>Social media growth</li><li>Content strategy</li><li>Community building</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li><b>82,000+</b> followers, all organic.</li>
+<li>One post reached <b>677,503</b> people.</li>
+<li>Content calendar, community and page analytics, years before anyone paid me for them.</li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="kolkata" data-x="744" data-id="study" data-year="2014" data-c="1" data-ch="Chapter 1 of 6: Kolkata" data-for="brand">
+<article class="beat" data-c="1" data-ch="Chapter 1 of 6: Kolkata" data-for="brand" data-id="study" data-s="kolkata" data-x="744" data-year="2014">
           <p class="beat-tag px">Chapter 1 · Kolkata · self-taught</p>
-          <div class="beat-main">
-            <h2>I taught myself SEO, ads, analytics and design to keep that page growing.</h2>
-            <p class="story">From YouTube tutorials, on a dial-up connection.</p>
-          </div>
-          <ul class="proof">
-            <li>Search engine optimisation, Google Ads and Google Analytics, self-taught.</li>
-            <li>Hundreds of hours in Photoshop, Premiere Pro and After Effects.</li>
-            <li>One of my videos held its viewers for 61.48% of its length, on average.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>SEO</li><li>Google Ads</li><li>Google Analytics</li><li>Photoshop</li><li>Video editing</li><li>Motion graphics</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I taught myself SEO, ads, analytics and design to keep that page growing.</h2>
+<p class="story">From YouTube tutorials, on a dial-up connection.</p>
+</div><ul class="skills"><li>SEO</li><li>Google Ads</li><li>Google Analytics</li><li>Photoshop</li><li>Video editing</li><li>Motion graphics</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>Search engine optimisation, Google Ads and Google Analytics, self-taught.</li>
+<li>Hundreds of hours in Photoshop, Premiere Pro and After Effects.</li>
+<li>One of my videos held its viewers for 61.48% of its length, on average.</li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="kolkata" data-x="1010" data-id="leave" data-year="2016" data-c="1" data-ch="Chapter 1 of 6: Kolkata">
+<article class="beat" data-c="1" data-ch="Chapter 1 of 6: Kolkata" data-id="leave" data-s="kolkata" data-x="1010" data-year="2016">
           <p class="beat-tag px">Chapter 1 · Kolkata · 2016</p>
-          <div class="beat-main">
-            <h2>In 2016 I left Kolkata to study marketing properly.</h2>
-            <p class="story">I had a degree in English literature, did not want to teach, and chose an MBA in Pune, where I knew nobody.</p>
-          </div>
-          <ul class="proof">
-            <li>BA in English (Honours), West Bengal State University, 2013 to 2016.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Written communication</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>In 2016 I left Kolkata to study marketing properly.</h2>
+<p class="story">I had a degree in English literature, did not want to teach, and chose an MBA in Pune, where I knew nobody.</p>
+</div><ul class="skills"><li>Written communication</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>BA in English (Honours), West Bengal State University, 2013 to 2016.</li>
+</ul></div>
         </article>
-
-        <!-- ═════ Chapter 2: Pune ═════ -->
-        <article class="beat" data-s="road" data-x="100" data-id="road" data-year="2016" data-c="2" data-ch="Chapter 2 of 6: Pune">
+<!-- ═════ Chapter 2: Pune ═════ -->
+<article class="beat" data-c="2" data-ch="Chapter 2 of 6: Pune" data-id="road" data-s="road" data-x="100" data-year="2016">
           <p class="beat-tag px">Chapter 2 · The road to Pune</p>
-          <div class="beat-main">
-            <h2>Kolkata to Pune: east coast to west, almost 2,000 km.</h2>
-            <p class="story">The next eight years of my career happen at the other end of this road.</p>
-          </div>
-          <div class="ev">
-            <p class="migi"><span class="migi-who px">MIGI:</span> For the record, he did not walk it. This game only has a walk button.</p>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>Kolkata to Pune: east coast to west, almost 2,000 km.</h2>
+<p class="story">The next eight years of my career happen at the other end of this road.</p>
+</div></div>
+          <div class="col-b"><p class="migi"><span class="migi-who px">MIGI:</span> For the record, he did not walk it. This game only has a walk button.</p></div>
         </article>
-
-        <article class="beat" data-s="pune" data-x="179" data-id="elim" data-year="2016" data-c="2" data-ch="Chapter 2 of 6: Pune" data-for="brand">
+<article class="beat" data-c="2" data-ch="Chapter 2 of 6: Pune" data-for="brand" data-id="elim" data-s="pune" data-x="179" data-year="2016">
           <p class="beat-tag px">Chapter 2 · Pune · 2016 to 2018</p>
-          <div class="beat-main">
-            <h2>MBA in Marketing at PIBM, with three internships.</h2>
-            <p class="story">I chose marketing because I had already been doing it for free since I was seventeen.</p>
-          </div>
-          <ul class="proof">
-            <li>MBA in Marketing, Pune Institute of Business Management, 2016 to 2018.</li>
-            <li>Internships at Nivea, Aamrit and Raman Byte.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Marketing strategy</li><li>Brand management</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>MBA in Marketing at PIBM, with three internships.</h2>
+<p class="story">I chose marketing because I had already been doing it for free since I was seventeen.</p>
+</div><ul class="skills"><li>Marketing strategy</li><li>Brand management</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>MBA in Marketing, Pune Institute of Business Management, 2016 to 2018.</li>
+<li>Internships at Nivea, Aamrit and Raman Byte.</li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="pune" data-x="472" data-id="agency" data-year="2017" data-c="2" data-ch="Chapter 2 of 6: Pune" data-for="brand founder">
+<article class="beat" data-c="2" data-ch="Chapter 2 of 6: Pune" data-for="brand founder" data-id="agency" data-s="pune" data-x="472" data-year="2017">
           <p class="beat-tag px">Chapter 2 · Pune · the college computer lab</p>
-          <div class="beat-main">
-            <h2>I built a complete agency brand, IllusionFX, before it had a single client.</h2>
-            <p class="story">Logo, animated intro, brochures and a plan, on a 4 GB laptop that rendered a few seconds at a time.</p>
-          </div>
-          <ul class="proof">
-            <li>Identity, motion graphics and collateral, all made by me.</li>
-            <li>Its tagline was “Artificially Real”, seven years before I built AI products.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Brand identity</li><li>Collateral design</li></ul>
-            <p class="migi"><span class="migi-who px">MIGI:</span> Clients: 0. Accuracy of the tagline: 100%.</p>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I built a complete agency brand, IllusionFX, before it had a single client.</h2>
+<p class="story">Logo, animated intro, brochures and a plan, on a 4 GB laptop that rendered a few seconds at a time.</p>
+</div><ul class="skills"><li>Brand identity</li><li>Collateral design</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>Identity, motion graphics and collateral, all made by me.</li>
+<li>Its tagline was “Artificially Real”, seven years before I built AI products.</li>
+</ul><p class="migi"><span class="migi-who px">MIGI:</span> Clients: 0. Accuracy of the tagline: 100%.</p></div>
         </article>
-
-        <article class="beat" data-s="pune" data-x="683" data-id="cut" data-year="2017" data-c="2" data-ch="Chapter 2 of 6: Pune">
+<article class="beat" data-c="2" data-ch="Chapter 2 of 6: Pune" data-id="cut" data-s="pune" data-x="683" data-year="2017">
           <p class="beat-tag px">Chapter 2 · Pune · November 2017</p>
-          <div class="beat-main">
-            <h2>The one company I wanted cut me in the group discussion.</h2>
-            <p class="story">It was the exact brand and digital role I had waited two years for. I cleared the written round, then did not get through.</p>
-          </div>
-          <div class="ev">
-            <p class="migi"><span class="migi-who px">MIGI:</span> Rounds cleared: 1 of 2. Watch the road; that rejection slip is still lying there.</p>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>The one company I wanted cut me in the group discussion.</h2>
+<p class="story">It was the exact brand and digital role I had waited two years for. I cleared the written round, then did not get through.</p>
+</div></div>
+          <div class="col-b"><p class="migi"><span class="migi-who px">MIGI:</span> Rounds cleared: 1 of 2. Watch the road; that rejection slip is still lying there.</p></div>
         </article>
-
-        <article class="beat" data-s="pune" data-x="882" data-id="hired" data-year="2017" data-c="2" data-ch="Chapter 2 of 6: Pune" data-lv="4" data-for="brand">
+<article class="beat" data-c="2" data-ch="Chapter 2 of 6: Pune" data-for="brand" data-id="hired" data-lv="4" data-s="pune" data-x="882" data-year="2017">
           <p class="beat-tag px">Chapter 2 · Pune · the same week</p>
-          <div class="beat-main">
-            <h2>So I showed the CEO my work, and he hired me on the spot.</h2>
-            <p class="story">My college director called the company's CEO and asked him to meet me.</p>
-          </div>
-          <ul class="proof">
-            <li>I showed my designs, websites, campaigns and a page with 80,000+ followers.</li>
-            <li>Interviews held: 0. Offer made: the same day.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Portfolio-led pitching</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>So I showed the CEO my work, and he hired me on the spot.</h2>
+<p class="story">My college director called the company's CEO and asked him to meet me.</p>
+</div><ul class="skills"><li>Portfolio-led pitching</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>I showed my designs, websites, campaigns and a page with 80,000+ followers.</li>
+<li>Interviews held: 0. Offer made: the same day.</li>
+</ul></div>
         </article>
-
-        <!-- ═════ Chapter 3: the first job and the gap ═════ -->
-        <article class="beat" data-s="kerala" data-x="165" data-id="job" data-year="2018" data-c="3" data-ch="Chapter 3 of 6: The first job" data-lv="5" data-for="brand founder">
+<!-- ═════ Chapter 3: the first job and the gap ═════ -->
+<article class="beat" data-c="3" data-ch="Chapter 3 of 6: The first job" data-for="brand founder" data-id="job" data-lv="5" data-s="kerala" data-x="165" data-year="2018">
           <p class="beat-tag px">Chapter 3 · CBS Ventures · January to October 2018</p>
-          <div class="beat-main">
-            <h2>In my first job I built a brand from nothing, alone, in ten months.</h2>
-            <p class="story">Branding and Digital Marketing Manager at CBS Ventures, barely out of college.</p>
-          </div>
-          <ul class="proof">
-            <li>Positioning, visual identity, website and brand voice, from zero.</li>
-            <li>Ran design, video, SEO and paid campaigns myself.</li>
-            <li>Also interviewed candidates for the company.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>0-to-1 brand building</li><li>Paid campaigns</li><li>Hiring</li></ul>
-            <p class="migi"><span class="migi-who px">MIGI:</span> Job titles: 1. Jobs actually done: at least 6.</p>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>In my first job I built a brand from nothing, alone, in ten months.</h2>
+<p class="story">Branding and Digital Marketing Manager at CBS Ventures, barely out of college.</p>
+</div><ul class="skills"><li>0-to-1 brand building</li><li>Paid campaigns</li><li>Hiring</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>Positioning, visual identity, website and brand voice, from zero.</li>
+<li>Ran design, video, SEO and paid campaigns myself.</li>
+<li>Also interviewed candidates for the company.</li>
+</ul><p class="migi"><span class="migi-who px">MIGI:</span> Job titles: 1. Jobs actually done: at least 6.</p></div>
         </article>
-
-        <article class="beat" data-s="gap" data-x="70" data-id="gap" data-year="2018" data-c="3" data-ch="Chapter 3 of 6: The gap">
+<article class="beat" data-c="3" data-ch="Chapter 3 of 6: The gap" data-id="gap" data-s="gap" data-x="70" data-year="2018">
           <p class="beat-tag px">Chapter 3 · October 2018 to February 2019</p>
-          <div class="beat-main">
-            <h2>Then four months between jobs, which I bridged with freelance work.</h2>
-            <p class="story">Two months in Kolkata and two in Bangalore, interviewing without success. Mind the potholes.</p>
-          </div>
-          <ul class="proof">
-            <li>Freelance design and digital projects kept me working until the next role.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Freelance client work</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>Then four months between jobs, which I bridged with freelance work.</h2>
+<p class="story">Two months in Kolkata and two in Bangalore, interviewing without success. Mind the potholes.</p>
+</div><ul class="skills"><li>Freelance client work</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>Freelance design and digital projects kept me working until the next role.</li>
+</ul></div>
         </article>
-
-        <!-- ═════ Chapter 4: the marketing floor ═════ -->
-        <article class="beat" data-s="floor" data-x="171" data-id="pibm" data-year="2019" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-lv="6" data-for="brand">
+<!-- ═════ Chapter 4: the marketing floor ═════ -->
+<article class="beat" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-for="brand" data-id="pibm" data-lv="6" data-s="floor" data-x="171" data-year="2019">
           <p class="beat-tag px">Chapter 4 · PIBM, Pune · March 2019 to today</p>
-          <div class="beat-main">
-            <h2>Since 2019 I have led brand marketing at PIBM, reporting to the Chairman and the CEO.</h2>
-            <p class="story">The business school where I did my MBA hired me back.</p>
-          </div>
-          <ul class="proof">
-            <li>Senior Brand Marketing Manager for a multi-brand higher-education group and its sister brands.</li>
-            <li>8 years of reporting directly to the Chairman and to the CEO, almost every working day.</li>
-            <li>I own brand, web, print, paid media and launches across the group.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>C-suite stakeholder management</li><li>Multi-brand management</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>Since 2019 I have led brand marketing at PIBM, reporting to the Chairman and the CEO.</h2>
+<p class="story">The business school where I did my MBA hired me back.</p>
+</div><ul class="skills"><li>C-suite stakeholder management</li><li>Multi-brand management</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>Senior Brand Marketing Manager for a multi-brand higher-education group and its sister brands.</li>
+<li>8 years of reporting directly to the Chairman and to the CEO, almost every working day.</li>
+<li>I own brand, web, print, paid media and launches across the group.</li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="floor" data-x="374" data-id="team" data-year="2020" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-for="brand ai">
+<article class="beat" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-for="brand ai" data-id="team" data-s="floor" data-x="374" data-year="2020">
           <p class="beat-tag px">Chapter 4 · PIBM · the team</p>
-          <div class="beat-main">
-            <h2>I lead a 21-person team across design, web and digital.</h2>
-            <p class="story">Requests arrive from Admissions, Counselling, Sales and the academic heads at once.</p>
-          </div>
-          <ul class="proof">
-            <li>12 to 15 direct reports, and 6 to 9 more through shared projects.</li>
-            <li>I replaced WhatsApp chasing with written briefs, one owner per job and fixed revision rounds.</li>
-            <li><b>99%</b> of projects delivered on time for six years.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Briefing systems</li><li>Project management</li><li>Cross-team coordination</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I lead a 21-person team across design, web and digital.</h2>
+<p class="story">Requests arrive from Admissions, Counselling, Sales and the academic heads at once.</p>
+</div><ul class="skills"><li>Briefing systems</li><li>Project management</li><li>Cross-team coordination</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>12 to 15 direct reports, and 6 to 9 more through shared projects.</li>
+<li>I replaced WhatsApp chasing with written briefs, one owner per job and fixed revision rounds.</li>
+<li><b>99%</b> of projects delivered on time for six years.</li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="floor" data-x="584" data-id="web" data-year="2021" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-for="brand founder">
+<article class="beat" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-for="brand founder" data-id="web" data-s="floor" data-x="584" data-year="2021">
           <p class="beat-tag px">Chapter 4 · PIBM · websites and search</p>
-          <div class="beat-main">
-            <h2>I run 50+ websites with 1,000+ pages, and grew organic traffic by 40–50%.</h2>
-            <p class="story">Main sites, sister brands, programme microsites and landing pages.</p>
-          </div>
-          <ul class="proof">
-            <li>Content restructuring, technical SEO and page experience drove the <b>40–50%</b> growth.</li>
-            <li>Five search-ready sites with live payment gateways, shipped in one month.</li>
-            <li>I own the information architecture, copy direction, design, QA and SEO.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Technical SEO</li><li>Website management</li><li>Information architecture</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I run 50+ websites with 1,000+ pages, and grew organic traffic by 40–50%.</h2>
+<p class="story">Main sites, sister brands, programme microsites and landing pages.</p>
+</div><ul class="skills"><li>Technical SEO</li><li>Website management</li><li>Information architecture</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>Content restructuring, technical SEO and page experience drove the <b>40–50%</b> growth.</li>
+<li>Five search-ready sites with live payment gateways, shipped in one month.</li>
+<li>I own the information architecture, copy direction, design, QA and SEO.</li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="floor" data-x="794" data-id="print" data-year="2022" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-for="brand">
+<article class="beat" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-for="brand" data-id="print" data-s="floor" data-x="794" data-year="2022">
           <p class="beat-tag px">Chapter 4 · PIBM · print and production</p>
-          <div class="beat-main">
-            <h2>I have signed off 1,000+ print, outdoor and digital pieces.</h2>
-            <p class="story">Print does not take hotfixes: one typo on a press run costs lakhs.</p>
-          </div>
-          <ul class="proof">
-            <li>Brochures, hoardings, newspaper ads, campus branding and video.</li>
-            <li>I own a <b>₹30–40 lakh</b> a year vendor budget: rates, copy, layouts, colour proofs and the press run.</li>
-            <li>A 200-page brochure, built in one day.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Print production</li><li>Vendor management</li><li>Budget ownership</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I have signed off 1,000+ print, outdoor and digital pieces.</h2>
+<p class="story">Print does not take hotfixes: one typo on a press run costs lakhs.</p>
+</div><ul class="skills"><li>Print production</li><li>Vendor management</li><li>Budget ownership</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>Brochures, hoardings, newspaper ads, campus branding and video.</li>
+<li>I own a <b>₹30–40 lakh</b> a year vendor budget: rates, copy, layouts, colour proofs and the press run.</li>
+<li>A 200-page brochure, built in one day.</li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="floor" data-x="1004" data-id="launch" data-year="2023" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-for="brand">
+<article class="beat" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-for="brand" data-id="launch" data-s="floor" data-x="1004" data-year="2023">
           <p class="beat-tag px">Chapter 4 · PIBM · launches and paid media</p>
-          <div class="beat-main">
-            <h2>I have run go-to-market for 20+ programme launches.</h2>
-            <p class="story">Each launch gets the full plan, from the brief to the lead form.</p>
-          </div>
-          <ul class="proof">
-            <li>Landing pages, SEO, and lead campaigns on Google Ads and Meta Ads.</li>
-            <li>I own the ad creative, campaign structure, remarketing and budget plan.</li>
-            <li><b>₹40–60 lakh</b> a year in marketing budgets managed.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Go-to-market</li><li>Meta Ads</li><li>Lead generation</li><li>Remarketing</li></ul>
-            <p class="migi"><span class="migi-who px">MIGI:</span> He plans the budget; the accounts desk holds the card.</p>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I have run go-to-market for 20+ programme launches.</h2>
+<p class="story">Each launch gets the full plan, from the brief to the lead form.</p>
+</div><ul class="skills"><li>Go-to-market</li><li>Meta Ads</li><li>Lead generation</li><li>Remarketing</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>Landing pages, SEO, and lead campaigns on Google Ads and Meta Ads.</li>
+<li>I own the ad creative, campaign structure, remarketing and budget plan.</li>
+<li><b>₹40–60 lakh</b> a year in marketing budgets managed.</li>
+</ul><p class="migi"><span class="migi-who px">MIGI:</span> He plans the budget; the accounts desk holds the card.</p></div>
         </article>
-
-        <article class="beat" data-s="floor" data-x="1214" data-id="decks" data-year="2024" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-for="brand">
+<article class="beat" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-for="brand" data-id="decks" data-s="floor" data-x="1214" data-year="2024">
           <p class="beat-tag px">Chapter 4 · PIBM · decks and events</p>
-          <div class="beat-main">
-            <h2>I have built or repaired 150+ decks, and branded events in days.</h2>
-            <p class="story">Sales, pitch, product-showcase and counselling decks.</p>
-          </div>
-          <ul class="proof">
-            <li>One deck went into a live product demo for one of India's largest government education accreditors.</li>
-            <li>A three-day flagship launch: 50 to 100 branded pieces, briefed and installed in three working days.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Presentation design</li><li>Event branding</li><li>Storytelling</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I have built or repaired 150+ decks, and branded events in days.</h2>
+<p class="story">Sales, pitch, product-showcase and counselling decks.</p>
+</div><ul class="skills"><li>Presentation design</li><li>Event branding</li><li>Storytelling</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>One deck went into a live product demo for one of India's largest government education accreditors.</li>
+<li>A three-day flagship launch: 50 to 100 branded pieces, briefed and installed in three working days.</li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="floor" data-x="1404" data-id="aiteam" data-year="2024" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-lv="7" data-for="brand ai founder">
+<article class="beat" data-c="4" data-ch="Chapter 4 of 6: The marketing floor" data-for="brand ai founder" data-id="aiteam" data-lv="7" data-s="floor" data-x="1404" data-year="2024">
           <p class="beat-tag px">Chapter 4 · PIBM · AI in the team</p>
-          <div class="beat-main">
-            <h2>I brought AI into my own team's work first.</h2>
-            <p class="story">Before I built any product, I automated the dullest parts of our week, then trained the team to run it.</p>
-          </div>
-          <ul class="proof">
-            <li>An ad-creative pipeline saves <b>2–3 hours a day</b>.</li>
-            <li>A custom GPT for student portraits removed <b>7–8 hours</b> of retouching a week.</li>
-            <li>AI funnels clean thousands of rows of lead data daily, and a site redesign went from weeks to hours.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Marketing automation</li><li>Custom GPTs</li><li>AI adoption and training</li></ul>
-            <p class="migi"><span class="migi-who px">MIGI:</span> Those stairs lead down to where I come from.</p>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I brought AI into my own team's work first.</h2>
+<p class="story">Before I built any product, I automated the dullest parts of our week, then trained the team to run it.</p>
+</div><ul class="skills"><li>Marketing automation</li><li>Custom GPTs</li><li>AI adoption and training</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>An ad-creative pipeline saves <b>2–3 hours a day</b>.</li>
+<li>A custom GPT for student portraits removed <b>7–8 hours</b> of retouching a week.</li>
+<li>AI funnels clean thousands of rows of lead data daily, and a site redesign went from weeks to hours.</li>
+</ul><p class="migi"><span class="migi-who px">MIGI:</span> Those stairs lead down to where I come from.</p></div>
         </article>
-
-        <!-- ═════ Chapter 5: the floors below ═════ -->
-        <article class="beat" data-s="dungeon" data-x="159" data-id="learn" data-year="2023" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="ai founder">
+<!-- ═════ Chapter 5: the floors below ═════ -->
+<article class="beat" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="ai founder" data-id="learn" data-s="dungeon" data-x="159" data-year="2023">
           <p class="beat-tag px">Chapter 5 · Floor B1 · 2023</p>
-          <div class="beat-main">
-            <h2>In 2023 I taught myself to build with AI, end to end.</h2>
-            <p class="story">Prompts became context, context became workflows, workflows became agents, and agents became products.</p>
-          </div>
-          <ul class="proof">
-            <li>I decide what to build, direct AI coding tools, review what they produce and ship it.</li>
-            <li>Claude Code, Codex, Cursor, Next.js, React, Supabase, Vercel and n8n.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Prompt engineering</li><li>Context engineering</li><li>Agentic workflows</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>In 2023 I taught myself to build with AI, end to end.</h2>
+<p class="story">Prompts became context, context became workflows, workflows became agents, and agents became products.</p>
+</div><ul class="skills"><li>Prompt engineering</li><li>Context engineering</li><li>Agentic workflows</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>I decide what to build, direct AI coding tools, review what they produce and ship it.</li>
+<li>Claude Code, Codex, Cursor, Next.js, React, Supabase, Vercel and n8n.</li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="dungeon" data-x="369" data-id="shipped" data-year="2024" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-lv="8" data-for="ai founder">
+<article class="beat" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="ai founder" data-id="shipped" data-lv="8" data-s="dungeon" data-x="369" data-year="2024">
           <p class="beat-tag px">Chapter 5 · Floor B2 · 2024 to today</p>
-          <div class="beat-main">
-            <h2>Since 2024 I have shipped 26+ AI products on my own.</h2>
-            <p class="story">Each one went from idea to live: strategy, design, build, launch and the marketing after.</p>
-          </div>
-          <ul class="proof">
-            <li><a href="https://aegisnote.houseofnamus.com/" target="_blank" rel="noopener">AEGIS VAULT ↗</a>: encrypted notes whose server never sees your key.</li>
-            <li><a href="https://thatonecrawler.houseofnamus.com/" target="_blank" rel="noopener">That One Crawler ↗</a>: a free 53-check audit for search and AI visibility.</li>
-            <li>200,000+ lines of AI-assisted code. <a href="https://sumandebnath.houseofnamus.com/projects" target="_blank" rel="noopener">See all of them ↗</a></li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>AI product management</li><li>Product marketing</li><li>Shipping with AI tools</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>Since 2024 I have shipped 26+ AI products on my own.</h2>
+<p class="story">Each one went from idea to live: strategy, design, build, launch and the marketing after.</p>
+</div><ul class="skills"><li>AI product management</li><li>Product marketing</li><li>Shipping with AI tools</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li><a href="https://aegisnote.houseofnamus.com/" rel="noopener" target="_blank">AEGIS VAULT ↗</a>: encrypted notes whose server never sees your key.</li>
+<li><a href="https://thatonecrawler.houseofnamus.com/" rel="noopener" target="_blank">That One Crawler ↗</a>: a free 53-check audit for search and AI visibility.</li>
+<li>200,000+ lines of AI-assisted code. <a href="https://sumandebnath.houseofnamus.com/projects" rel="noopener" target="_blank">See all of them ↗</a></li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="dungeon" data-x="579" data-id="migi" data-year="2026" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="ai founder">
+<article class="beat" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="ai founder" data-id="migi" data-s="dungeon" data-x="579" data-year="2026">
           <p class="beat-tag px">Chapter 5 · Floor B3 · July 2026</p>
-          <div class="beat-main">
-            <h2>I built MIGI, a fleet of 46 AI agents that runs my admin.</h2>
-            <p class="story">They run my personal brand, job search, expenses, journal and uptime while I work.</p>
-          </div>
-          <ul class="proof">
-            <li>Controlled from a two-factor dashboard, a Telegram bot and an Android app.</li>
-            <li><b>500+</b> automated checks keep the agents honest.</li>
-            <li>Cost so far: about <b>$5</b>, where guides estimate $200 a month. <a href="https://sumandebnath.houseofnamus.com/agents/migi" target="_blank" rel="noopener">Case study ↗</a></li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Multi-agent systems</li><li>LLM evaluation</li><li>AI cost control</li></ul>
-            <p class="migi"><span class="migi-who px">MIGI:</span> This is where I was switched on. No longer a hologram.</p>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I built MIGI, a fleet of 46 AI agents that runs my admin.</h2>
+<p class="story">They run my personal brand, job search, expenses, journal and uptime while I work.</p>
+</div><ul class="skills"><li>Multi-agent systems</li><li>LLM evaluation</li><li>AI cost control</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>Controlled from a two-factor dashboard, a Telegram bot and an Android app.</li>
+<li><b>500+</b> automated checks keep the agents honest.</li>
+<li>Cost so far: about <b>$5</b>, where guides estimate $200 a month. <a href="https://sumandebnath.houseofnamus.com/agents/migi" rel="noopener" target="_blank">Case study ↗</a></li>
+</ul><p class="migi"><span class="migi-who px">MIGI:</span> This is where I was switched on. No longer a hologram.</p></div>
         </article>
-
-        <article class="beat" data-s="dungeon" data-x="789" data-id="models" data-year="2026" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="ai">
+<article class="beat" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="ai" data-id="models" data-s="dungeon" data-x="789" data-year="2026">
           <p class="beat-tag px">Chapter 5 · Floor B4 · language models</p>
-          <div class="beat-main">
-            <h2>I trained a language model from scratch, and fine-tuned another to run on a laptop.</h2>
-            <p class="story">Then I found a bug in my own scorer, and corrected my published number.</p>
-          </div>
-          <ul class="proof">
-            <li><a href="https://sumandebnath.houseofnamus.com/slms/pentacmd" target="_blank" rel="noopener">PentaCMD-47M ↗</a>: 47M parameters, 299,000 training pairs, about 87% exact match.</li>
-            <li><a href="https://sumandebnath.houseofnamus.com/llms/qdex-1.5b" target="_blank" rel="noopener">Qdex-1.5B ↗</a>: a QLoRA fine-tune; HumanEval 1.2% → 42.1% on a 16 GB laptop.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Model training</li><li>QLoRA fine-tuning</li><li>Benchmarking</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I trained a language model from scratch, and fine-tuned another to run on a laptop.</h2>
+<p class="story">Then I found a bug in my own scorer, and corrected my published number.</p>
+</div><ul class="skills"><li>Model training</li><li>QLoRA fine-tuning</li><li>Benchmarking</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li><a href="https://sumandebnath.houseofnamus.com/slms/pentacmd" rel="noopener" target="_blank">PentaCMD-47M ↗</a>: 47M parameters, 299,000 training pairs, about 87% exact match.</li>
+<li><a href="https://sumandebnath.houseofnamus.com/llms/qdex-1.5b" rel="noopener" target="_blank">Qdex-1.5B ↗</a>: a QLoRA fine-tune; HumanEval 1.2% → 42.1% on a 16 GB laptop.</li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="dungeon" data-x="999" data-id="trust" data-year="2026" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="ai founder">
+<article class="beat" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="ai founder" data-id="trust" data-s="dungeon" data-x="999" data-year="2026">
           <p class="beat-tag px">Chapter 5 · Floor B5 · high stakes</p>
-          <div class="beat-main">
-            <h2>I build for places where a wrong answer is expensive.</h2>
-            <p class="story">Banking, money and other people's data.</p>
-          </div>
-          <ul class="proof">
-            <li><a href="https://sumandebnath.houseofnamus.com/banking/rm-copilot" target="_blank" rel="noopener">Banking Co-pilot ↗</a>: policy-cited answers, 12 modules, 38 security tests, three audits.</li>
-            <li>ROASmind: an AI-native OS for Meta, Google and LinkedIn ads, 200,000+ lines, in private testing. <button type="button" class="inline" data-open="compose" data-compose="roasmind">Ask for early access</button></li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Responsible AI</li><li>Security testing</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I build for places where a wrong answer is expensive.</h2>
+<p class="story">Banking, money and other people's data.</p>
+</div><ul class="skills"><li>Responsible AI</li><li>Security testing</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li><a href="https://sumandebnath.houseofnamus.com/banking/rm-copilot" rel="noopener" target="_blank">Banking Co-pilot ↗</a>: policy-cited answers, 12 modules, 38 security tests, three audits.</li>
+<li>ROASmind: an AI-native OS for Meta, Google and LinkedIn ads, 200,000+ lines, in private testing. <button class="inline" data-compose="roasmind" data-open="compose" type="button">Ask for early access</button></li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="dungeon" data-x="1209" data-id="rules" data-year="2026" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="ai founder">
+<article class="beat" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="ai founder" data-id="rules" data-s="dungeon" data-x="1209" data-year="2026">
           <p class="beat-tag px">Chapter 5 · Floor B6 · how I work</p>
-          <div class="beat-main">
-            <h2>Four rules I build by, each one from something that broke.</h2>
-          </div>
-          <ul class="proof">
-            <li><a href="https://sumandebnath.houseofnamus.com/notebook/never-run-a-coding-agent-on-autopilot" target="_blank" rel="noopener">No coding agent on autopilot ↗</a>: a person approves the steps that matter.</li>
-            <li><a href="https://sumandebnath.houseofnamus.com/notebook/evaluation-harness-scoring-bug" target="_blank" rel="noopener">Test AI before the demo ↗</a>, and test the test.</li>
-            <li><a href="https://sumandebnath.houseofnamus.com/notebook/what-ai-agents-cost-to-run" target="_blank" rel="noopener">Running cost is a feature ↗</a>.</li>
-            <li><a href="https://sumandebnath.houseofnamus.com/notebook/cited-by-chatgpt-what-i-changed" target="_blank" rel="noopener">Write so AI assistants can cite you ↗</a>; ChatGPT now cites me.</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Human-in-the-loop design</li><li>AEO and GEO</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>Four rules I build by, each one from something that broke.</h2>
+</div><ul class="skills"><li>Human-in-the-loop design</li><li>AEO and GEO</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li><a href="https://sumandebnath.houseofnamus.com/notebook/never-run-a-coding-agent-on-autopilot" rel="noopener" target="_blank">No coding agent on autopilot ↗</a>: a person approves the steps that matter.</li>
+<li><a href="https://sumandebnath.houseofnamus.com/notebook/evaluation-harness-scoring-bug" rel="noopener" target="_blank">Test AI before the demo ↗</a>, and test the test.</li>
+<li><a href="https://sumandebnath.houseofnamus.com/notebook/what-ai-agents-cost-to-run" rel="noopener" target="_blank">Running cost is a feature ↗</a>.</li>
+<li><a href="https://sumandebnath.houseofnamus.com/notebook/cited-by-chatgpt-what-i-changed" rel="noopener" target="_blank">Write so AI assistants can cite you ↗</a>; ChatGPT now cites me.</li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="dungeon" data-x="1419" data-id="film" data-year="2026" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="brand">
+<article class="beat" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="brand" data-id="film" data-s="dungeon" data-x="1419" data-year="2026">
           <p class="beat-tag px">Chapter 5 · the cinema</p>
-          <div class="beat-main">
-            <h2>I also wrote, animated, scored and cut a six-minute film about this journey.</h2>
-            <p class="story">It is called “Who am I?” and runs 5 minutes 57 seconds. The crew was one person.</p>
-          </div>
-          <div class="proof">
-            <p><a class="btn btn-gold px" href="https://sumandebnath.houseofnamus.com/" target="_blank" rel="noopener">Watch the film ↗</a></p>
-          </div>
-          <div class="ev">
-            <ul class="skills"><li>Animation</li><li>Music scoring</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I also wrote, animated, scored and cut a six-minute film about this journey.</h2>
+<p class="story">It is called “Who am I?” and runs 5 minutes 57 seconds. The crew was one person.</p>
+</div><ul class="skills"><li>Animation</li><li>Music scoring</li></ul></div>
+          <div class="col-b"><div class="proof">
+<p><a class="btn btn-gold px" href="https://sumandebnath.houseofnamus.com/" rel="noopener" target="_blank">Watch the film ↗</a></p>
+</div></div>
         </article>
-
-        <!-- ═════ Chapter 6: today ═════ -->
-        <article class="beat" data-s="roof" data-x="141" data-id="now" data-year="Today" data-c="6" data-ch="Chapter 6 of 6: Today" data-lv="9" data-for="brand ai founder">
+<!-- ═════ Chapter 6: today ═════ -->
+<article class="beat" data-c="6" data-ch="Chapter 6 of 6: Today" data-for="brand ai founder" data-id="now" data-lv="9" data-s="roof" data-x="141" data-year="Today">
           <p class="beat-tag px">Chapter 6 · a rooftop in Pune · today</p>
-          <div class="beat-main">
-            <h2>I am looking for senior brand marketing leadership, or an AI product marketing or AI product role.</h2>
-            <p class="story">In India, or remote for teams in the US, the UK and Europe. Open to relocation.</p>
-          </div>
-          <ul class="proof">
-            <li>Studying Generative and Agentic AI at Saïd Business School, University of Oxford.</li>
-            <li>PGP in Strategic Digital Marketing, Great Lakes (2023); Google Analytics certified; Anthropic's Claude courses (2026).</li>
-          </ul>
-          <div class="ev">
-            <ul class="skills"><li>Generative AI strategy</li><li>Continuous learning</li></ul>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>I am looking for senior brand marketing leadership, or an AI product marketing or AI product role.</h2>
+<p class="story">In India, or remote for teams in the US, the UK and Europe. Open to relocation.</p>
+</div><ul class="skills"><li>Generative AI strategy</li><li>Continuous learning</li></ul></div>
+          <div class="col-b"><ul class="proof">
+<li>Studying Generative and Agentic AI at Saïd Business School, University of Oxford.</li>
+<li>PGP in Strategic Digital Marketing, Great Lakes (2023); Google Analytics certified; Anthropic's Claude courses (2026).</li>
+</ul></div>
         </article>
-
-        <article class="beat" data-s="roof" data-x="334" data-id="fit" data-year="Today" data-c="6" data-ch="Chapter 6 of 6: Today" data-for="brand ai">
+<article class="beat" data-c="6" data-ch="Chapter 6 of 6: Today" data-for="brand ai" data-id="fit" data-s="roof" data-x="334" data-year="Today">
           <p class="beat-tag px">Chapter 6 · a tool for recruiters</p>
-          <div class="beat-main">
-            <h2>Check my fit against your job description in ten seconds.</h2>
-            <p class="story">Paste it in, and see which requirements I have evidence for and which ones I do not.</p>
-          </div>
-          <div class="proof">
-            <p><button class="btn btn-gold px" type="button" data-open="fit">Check the fit ▶</button></p>
-          </div>
-          <div class="ev">
-            <p class="migi"><span class="migi-who px">MIGI:</span> It runs in your browser. Nothing you paste is sent anywhere.</p>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>Check my fit against your job description in ten seconds.</h2>
+<p class="story">Paste it in, and see which requirements I have evidence for and which ones I do not.</p>
+</div></div>
+          <div class="col-b"><div class="proof">
+<p><button class="btn btn-gold px" data-open="fit" type="button">Check the fit ▶</button></p>
+</div><p class="migi"><span class="migi-who px">MIGI:</span> It runs in your browser. Nothing you paste is sent anywhere.</p></div>
         </article>
-
-        <article class="beat" data-s="roof" data-x="567" data-id="tools" data-year="Today" data-c="6" data-ch="Chapter 6 of 6: Today" data-for="brand ai founder">
+<article class="beat" data-c="6" data-ch="Chapter 6 of 6: Today" data-for="brand ai founder" data-id="tools" data-s="roof" data-x="567" data-year="Today">
           <p class="beat-tag px">Chapter 6 · six chests</p>
-          <div class="beat-main">
-            <h2>Take any of these, free, whether or not you hire me.</h2>
-            <p class="story">No sign-up for any of them.</p>
-          </div>
-          <div class="tools">
-            <button class="btn btn-ghost px" type="button" data-open="pack">AI-hiring interview questions</button>
-            <button class="btn btn-ghost px" type="button" data-open="audit">AI-visibility audit</button>
-            <button class="btn btn-ghost px" type="button" data-open="slides">Slide Doctor deck audit</button>
-            <button class="btn btn-ghost px" type="button" data-open="dpe">D-PE.ai prompt workspace</button>
-            <button class="btn btn-ghost px" type="button" data-open="calc">AI running-cost calculator</button>
-            <button class="btn btn-ghost px" type="button" data-open="compose" data-compose="consult">15-minute AI consult</button>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>Take any of these, free, whether or not you hire me.</h2>
+<p class="story">No sign-up for any of them.</p>
+</div></div>
+          <div class="col-b"><div class="tools">
+<button class="btn btn-ghost px" data-open="pack" type="button">AI-hiring interview questions</button>
+<button class="btn btn-ghost px" data-open="audit" type="button">AI-visibility audit</button>
+<button class="btn btn-ghost px" data-open="slides" type="button">Slide Doctor deck audit</button>
+<button class="btn btn-ghost px" data-open="dpe" type="button">D-PE.ai prompt workspace</button>
+<button class="btn btn-ghost px" data-open="calc" type="button">AI running-cost calculator</button>
+<button class="btn btn-ghost px" data-compose="consult" data-open="compose" type="button">15-minute AI consult</button>
+</div></div>
         </article>
-
-        <article class="beat" data-s="roof" data-x="764" data-id="contact" data-year="Today" data-c="6" data-ch="Chapter 6 of 6: Today" data-for="brand ai founder">
+<article class="beat" data-c="6" data-ch="Chapter 6 of 6: Today" data-for="brand ai founder" data-id="contact" data-s="roof" data-x="764" data-year="Today">
           <p class="beat-tag px">Chapter 6 · the next level</p>
-          <div class="beat-main">
-            <h2>This is 5% of what I want to do. I am looking for the place to do the other 95%.</h2>
-            <p class="story">The email is already written for you. A 20-minute call is usually enough to see if there is a fit.</p>
-          </div>
-          <div class="proof cta-row">
-            <button class="btn btn-gold px" type="button" data-open="compose">Email Suman ▶</button>
-            <button class="btn btn-ghost px" type="button" data-open="summary">MIGI's summary</button>
-            <a class="btn btn-ghost px" href="https://sumandebnath.houseofnamus.com/Suman_Debnath_Resume.pdf" target="_blank" rel="noopener">Résumé ↗</a>
-            <a class="btn btn-ghost px" href="https://linkedin.com/in/suman-debnath-a528653a1" target="_blank" rel="noopener">LinkedIn ↗</a>
-          </div>
-          <div class="ev">
-            <p class="migi"><span class="migi-who px">MIGI:</span> I wrote up everything I logged on the way. Take the summary to your team.</p>
-          </div>
+          <div class="col-a"><div class="beat-main">
+<h2>This is 5% of what I want to do. I am looking for the place to do the other 95%.</h2>
+<p class="story">The email is already written for you. A 20-minute call is usually enough to see if there is a fit.</p>
+</div></div>
+          <div class="col-b"><div class="proof cta-row">
+<button class="btn btn-gold px" data-open="compose" type="button">Email Suman ▶</button>
+<button class="btn btn-ghost px" data-open="summary" type="button">MIGI's summary</button>
+<a class="btn btn-ghost px" href="https://sumandebnath.houseofnamus.com/Suman_Debnath_Resume.pdf" rel="noopener" target="_blank">Résumé ↗</a>
+<a class="btn btn-ghost px" href="https://linkedin.com/in/suman-debnath-a528653a1" rel="noopener" target="_blank">LinkedIn ↗</a>
+</div><p class="migi"><span class="migi-who px">MIGI:</span> I wrote up everything I logged on the way. Take the summary to your team.</p></div>
         </article>
-        </div>
-
-        <nav class="beat-nav" aria-label="Move through the story">
+</div>
+<nav class="beat-nav" aria-label="Move through the story">
           <button class="btn btn-ghost px" id="prev" type="button">◀ Back</button>
           <div class="nav-mid">
             <ol class="pips" id="pips" aria-label="Chapters"></ol>
@@ -699,7 +584,10 @@
     </div>
   </main>
 
+  <div class="game-end" aria-hidden="true"><p class="px">The road ends here · scroll up to play again</p></div>
+
   <section class="faq" id="faq" aria-labelledby="faq-title">
+    <p class="kicker px">After the game</p>
     <h2 id="faq-title">What do recruiters and clients usually ask about Suman Debnath?</h2>
     <details open><summary>Who is Suman Debnath?</summary><p>Suman Debnath is a Senior Brand Marketing Manager at Pune Institute of Business Management in Pune, India, with 9+ years in brand and digital marketing. Since 2024 he has also built and shipped 26+ AI products on his own, including a 46-agent AI system and a language model he trained from scratch.</p></details>
     <details><summary>Which Suman Debnath is this?</summary><p>This is Suman Debnath the brand marketing leader and AI product builder from Pune and Kolkata, India: creator of the PentaCMD-47M language model, the MIGI agent fleet and ROASmind, and founder of House of Namus. He is not the cloud developer advocate, the power-systems researcher or the news-site web engineer who share the name.</p></details>
@@ -710,6 +598,7 @@
   </section>
 
   <nav class="more" aria-labelledby="more-title">
+    <p class="kicker px">The full portfolio</p>
     <h2 id="more-title">Want the long version? The full portfolio has the details.</h2>
     <ul>
       <li><a href="https://sumandebnath.houseofnamus.com/projects?utm_source=hire.sumandebnath&amp;utm_medium=referral&amp;utm_campaign=career_mode&amp;utm_content=footer_projects" target="_blank" rel="noopener"><b>Projects</b><span>Every AI product, with case studies</span></a></li>

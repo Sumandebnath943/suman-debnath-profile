@@ -1,6 +1,6 @@
 /* Career Mode — Chapter 1: Kolkata at dawn, 2009 to 2016.
    Everything is baked once into a few small canvases, then scrolled as parallax layers. */
-import { mk, R, mix, disc, seg, text, textW, plate, ease, out3, commas } from './kit.js';
+import { mk, R, mix, disc, seg, text, textW, plate, ease, out3, commas, bnText } from './kit.js';
 import { rng, DK, BLD, SH, CLOTH, facade, win, tree, skyline, howrah, victoria, crt, room, taxi, lamp, pole, wire, signboard } from './props.js';
 
 /* ───────── the chapter ───────── */
@@ -268,6 +268,46 @@ export function kolkata() {
     }
   }
 
+  // Bengali signs: a blue street plate pointing to Howrah Bridge, the sweet shop's rooftop board and the chai stall's.
+  // The lettering needs the Bengali web fonts, so it is drawn once they have loaded.
+  let bn = null;
+  const buildBn = () => {
+    if (bn) return;
+    bn = {
+      howrah: bnText('হাওড়া ব্রিজ', 11, '#ffffff'),
+      sweet: bnText('মিষ্টিমুখ', 15, '#ffe08a', '"Galada", "Hind Siliguri", "Noto Sans Bengali", "Nirmala UI", cursive', 400),
+      cha: bnText('চা', 13, '#712c2c'),
+    };
+  };
+  if (document.fonts && document.fonts.load) {
+    Promise.all([document.fonts.load('700 11px "Hind Siliguri"', 'হাওড়া ব্রিজ চা'), document.fonts.load('400 15px "Galada"', 'মিষ্টিমুখ')]).catch(() => {}).finally(buildBn);
+    setTimeout(buildBn, 4000);
+  } else buildBn();
+  hot.push({ x: 144, y: B - 72, w: 82, h: 30, say: 'A Kolkata street sign: Bengali first, then English. হাওড়া ব্রিজ is Howrah Bridge, the one behind it.' });
+  hot.push({ x: 894, y: B - 76, w: 70, h: 24, say: 'মিষ্টিমুখ, mishtimukh: "a sweet mouth". In Bengal, good news is always shared with a sweet.' });
+  hot.push({ x: 4, y: B - 58, w: 24, h: 18, say: 'চা, cha: Bengali for tea. Every plan in this city starts with one.' });
+  const signs = (g, sx, py) => {
+    if (!bn) return;
+    { // the street plate, hung off the electric pole by the river
+      const s = bn.howrah, en = 'HOWRAH BR. >', w = Math.max(s.w, textW(en)) + 8, h = s.h + 15, X = sx(225) - w, Y = py + B - 70;
+      R(g, '#262b44', X + w, Y + 5, 4, 2); R(g, '#262b44', X + w, Y + h - 6, 4, 2);
+      R(g, '#f4f4f4', X - 1, Y - 1, w + 2, h + 2); R(g, '#1d4f9c', X, Y, w, h); R(g, '#3b6fc4', X, Y, w, 1);
+      g.drawImage(s.c, X + ((w - s.w) >> 1), Y + 3);
+      text(g, en, X + ((w - textW(en)) >> 1), Y + s.h + 6, '#f4f4f4');
+    }
+    { // the sweet shop's board on its roof
+      const s = bn.sweet, w = s.w + 10, h = s.h + 9, X = sx(929) - (w >> 1), Y = py + B - 56 - h;
+      R(g, '#4a2f18', X + 6, Y + h, 2, 4); R(g, '#4a2f18', X + w - 8, Y + h, 2, 4);
+      R(g, '#181425', X - 1, Y - 1, w + 2, h + 2); R(g, '#7a2a3c', X, Y, w, h); R(g, '#a8445a', X, Y, w, 1); R(g, '#4a1c28', X, Y + h - 1, w, 1);
+      g.drawImage(s.c, X + ((w - s.w) >> 1), Y + 4);
+    }
+    { // the chai stall's little board, on top of its awning
+      const s = bn.cha, w = s.w + 8, h = s.h + 6, X = sx(16) - (w >> 1), Y = py + B - 41 - h;
+      R(g, '#181425', X - 1, Y - 1, w + 2, h + 2); R(g, '#f5eac8', X, Y, w, h); R(g, '#e3d1a5', X, Y + h - 1, w, 1);
+      g.drawImage(s.c, X + ((w - s.w) >> 1), Y + 3);
+    }
+  };
+
   const SKY = [['#1f2452', '#5b3f87', '#e2766a', '#ffd28a'], ['#2b78d2', '#5fb0ef', '#a3dbf5', '#e6f5ee']];
   const SKILLS = [['SEO', '#ffcd75'], ['GOOGLE ADS', '#73eff7'], ['ANALYTICS', '#a7f070'], ['PHOTOSHOP', '#41a6f6'], ['PREMIERE PRO', '#f6757a'], ['AFTER EFFECTS', '#c9a0ff']];
   const top = B - 98;
@@ -295,6 +335,7 @@ export function kolkata() {
     },
     // Small live details inside the rooms: the video buffers slowly and the modem blinks.
     live({ x: g, sx, py, t }) {
+      signs(g, sx, py);
       const st = rooms.study;
       R(g, '#e43b44', sx(st.screen.x), py + st.screen.y + 7, 1 + Math.floor(((t * 0.9) % 6) / 6 * 6), 1);
       [0, 1, 2].forEach((i) => R(g, Math.sin(t * (9 + i * 4) + i) > 0 ? (i === 1 ? '#ffcd75' : '#a7f070') : '#1f4636', sx(st.modem.x) + i * 3, py + st.modem.y, 1, 1));

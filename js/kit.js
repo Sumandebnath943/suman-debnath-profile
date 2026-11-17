@@ -150,6 +150,28 @@ export const text = (x, s, X, Y, c, sc = 1) => {
     }
   }
 };
+// Bengali lettering for signboards. The bitmap font above is Latin only, so Bengali is set in a real
+// font, then every pixel is snapped to fully on or off, so it sits in the pixel art without blur.
+export const bnText = (s, px, color, family = '"Hind Siliguri", "Noto Sans Bengali", "Nirmala UI", sans-serif', weight = 700) => {
+  const probe = mk(4, 4).x;
+  probe.font = `${weight} ${px}px ${family}`;
+  const w = Math.ceil(probe.measureText(s).width) + 4, h = Math.ceil(px * 1.7);
+  const o = mk(w, h);
+  o.x.font = probe.font; o.x.textBaseline = 'alphabetic'; o.x.fillStyle = '#000';
+  o.x.fillText(s, 2, Math.round(px * 1.18));
+  const id = o.x.getImageData(0, 0, o.w, o.h), d = id.data, [r, g, b] = rgb(color);
+  let top = o.h, bottom = 0;
+  for (let i = 0; i < d.length; i += 4) {
+    const on = d[i + 3] >= 118;
+    d[i] = r; d[i + 1] = g; d[i + 2] = b; d[i + 3] = on ? 255 : 0;
+    if (on) { const y = (i / 4 / o.w) | 0; top = Math.min(top, y); bottom = Math.max(bottom, y); }
+  }
+  o.x.putImageData(id, 0, 0);
+  const t = mk(o.w, Math.max(1, bottom - top + 1));       // trimmed to the ink, so it centres on a board
+  t.x.drawImage(o.c, 0, -top);
+  return t;
+};
+
 // Text with a dark outline, readable on any background.
 export const label = (x, s, X, Y, c, sc = 1, o = INK) => {
   for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) if (a || b) text(x, s, X + a, Y + b, o, sc);

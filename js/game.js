@@ -130,7 +130,7 @@ function setActive(i) {
   const b = beats[i];
   beats.forEach((o) => o.el.classList.toggle('is-active', o.i === i));
   $$('button', pipsEl).forEach((p, j) => { p.setAttribute('aria-current', j + 1 === b.ch ? 'true' : 'false'); p.classList.toggle('is-done', j + 1 < b.ch); });
-  hudYear.textContent = b.year; hudCh.textContent = b.chName;
+  hudYear.textContent = b.year; if (hudCh) hudCh.textContent = b.chName;
   countEl.textContent = `${i + 1} of ${beats.length}`;
   prevBtn.disabled = i === 0;
   setNextLabel();
@@ -157,10 +157,12 @@ function setActive(i) {
 
 // With a reader's role set, Next skips to the next beat that matters to them.
 const nextFor = (i) => { if (!role || role === 'curious') return i + 1; for (let j = i + 1; j < beats.length; j++) if (forRole(beats[j])) return j; return beats.length - 1; };
+const smallScreen = window.matchMedia('(max-width: 820px), (max-aspect-ratio: 5/6)');
 function setNextLabel() {
-  const i = Math.max(0, active);
-  nextBtn.textContent = i === 0 ? 'Start walking ▶' : i === beats.length - 1 ? 'Back to the start ↺' : role && role !== 'curious' ? 'Next for you ▶' : 'Next ▶';
+  const i = Math.max(0, active), sm = smallScreen.matches, forYou = role && role !== 'curious';
+  nextBtn.textContent = i === 0 ? (sm ? 'Start ▶' : 'Start walking ▶') : i === beats.length - 1 ? (sm ? 'Again ↺' : 'Back to the start ↺') : forYou && !sm ? 'Next for you ▶' : 'Next ▶';
 }
+smallScreen.addEventListener && smallScreen.addEventListener('change', setNextLabel);
 function setRole(w) {
   role = w || '';
   beats.forEach((b) => b.el.classList.toggle('for-you', forRole(b)));
@@ -690,7 +692,8 @@ function boot() {
   soundBtn.addEventListener('click', () => {
     soundOn = !soundOn;
     soundBtn.setAttribute('aria-pressed', String(soundOn));
-    soundBtn.textContent = soundOn ? 'Sound on' : 'Sound off';
+    soundBtn.setAttribute('aria-label', soundOn ? 'Sound is on' : 'Sound is off');
+    soundBtn.title = soundOn ? 'Sound is on' : 'Sound is off';
     beep(660, 0.08); beep(990, 0.12, 'square', 0.035, 0, 0.08);
   });
 
