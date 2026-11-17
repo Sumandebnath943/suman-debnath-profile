@@ -170,7 +170,7 @@
       <div class="crest-wrap crest-big"><canvas class="crest" data-crest="boot" role="img" aria-label="Career Mode"></canvas><span class="crest-script">Suman Debnath</span></div>
       <div class="boot-bar"><i id="boot-fill"></i></div>
       <p class="boot-msg px" id="boot-msg">Loading Kolkata, 2009…</p>
-      <p class="boot-tip">Scroll to walk. Press Space or tap to jump.</p>
+      <p class="boot-tip"><span class="desk-only">Scroll to walk. Press Space or tap to jump.</span><span class="story-only">Tap to walk. Press JUMP for the hurdles.</span></p>
     </div>
   </div>
 
@@ -204,14 +204,18 @@
       <div class="scene-wrap" id="scene-wrap">
         <canvas id="scene" aria-hidden="true"></canvas>
         <p class="tip" id="tip" role="status" aria-live="polite"></p>
+        <!-- Phones only (story mode): chapter progress bars and the jump button. -->
+        <nav class="story-bar story-only" id="story-bar" aria-label="Chapters"></nav>
+        <button class="jump-btn story-only px" id="jump-btn" type="button" aria-label="Jump">Jump</button>
       </div>
+      <div class="sheet-dim story-only" id="sheet-dim" aria-hidden="true"></div>
 
       <!-- The story sits in a dialogue box under the street, so nothing covers the scene. -->
       <section class="panel" id="panel" aria-label="The story">
         <div class="beats">
         <!-- Each beat: a speech card (Suman's line, the story behind it, MIGI's aside) and a quest log (what he did, and the skills it proves). -->
         <!-- ═════ Chapter 1: Kolkata ═════ -->
-        <article class="beat beat-title is-active" data-s="kolkata" data-x="110" data-id="title" data-year="Today" data-c="1" data-ch="Chapter 1 of 6: Kolkata" data-for="brand ai founder">
+        <article class="beat beat-title is-active" data-s="kolkata" data-x="110" data-id="title" data-quest="What are you here for?" data-year="Today" data-c="1" data-ch="Chapter 1 of 6: Kolkata" data-for="brand ai founder">
           <div class="say">
             <h1>Hi, I am Suman Debnath.</h1>
             <p class="story">Senior Brand Marketing Manager in Pune, India. For 9+ years I have built brands, teams and launches, and since 2024 I have also shipped 26+ AI products on my own.</p>
@@ -221,7 +225,7 @@
             <p class="beat-tag px">Quest log · <b>New game</b></p>
             <ul class="proof todo">
               <li>Choose what you are here for, and I will mark the stops that matter.</li>
-              <li>Scroll, swipe or use the arrow keys to walk. Space or a tap jumps.</li>
+              <li><span class="desk-only">Scroll, swipe or use the arrow keys to walk. Space or a tap jumps.</span><span class="story-only">Tap the right side of the scene, or Next, to walk. JUMP clears the hurdles.</span></li>
             </ul>
             <div class="who-chips" role="group" aria-label="Tell MIGI what you are looking for">
               <button type="button" class="chip px" data-who="brand">A marketing hire</button>
@@ -649,7 +653,7 @@
           </div>
         </article>
 
-        <article class="beat" data-s="dungeon" data-x="1419" data-id="film" data-year="2026" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="brand">
+        <article class="beat" data-s="dungeon" data-x="1419" data-id="film" data-quest="Watch the film" data-year="2026" data-c="5" data-ch="Chapter 5 of 6: The floors below" data-for="brand">
           <div class="say">
             <h2>I also wrote, animated, scored and cut a six-minute film about this journey.</h2>
             <p class="story">It is called “Who am I?” and runs 5 minutes 57 seconds.</p>
@@ -683,7 +687,7 @@
           </div>
         </article>
 
-        <article class="beat" data-s="roof" data-x="334" data-id="fit" data-year="Today" data-c="6" data-ch="Chapter 6 of 6: Today" data-for="brand ai">
+        <article class="beat" data-s="roof" data-x="334" data-id="fit" data-quest="Check the fit" data-year="Today" data-c="6" data-ch="Chapter 6 of 6: Today" data-for="brand ai">
           <div class="say">
             <h2>Check my fit against your job description in ten seconds.</h2>
             <p class="story">Paste it in, and see which requirements I have evidence for and which ones I do not.</p>
@@ -699,7 +703,7 @@
           </div>
         </article>
 
-        <article class="beat" data-s="roof" data-x="567" data-id="tools" data-year="Today" data-c="6" data-ch="Chapter 6 of 6: Today" data-for="brand ai founder">
+        <article class="beat" data-s="roof" data-x="567" data-id="tools" data-quest="Open the six chests" data-year="Today" data-c="6" data-ch="Chapter 6 of 6: Today" data-for="brand ai founder">
           <div class="say">
             <h2>Take any of these, free, whether or not you hire me.</h2>
             <p class="story">Six chests on the roof. None of them asks you to sign up.</p>
@@ -718,7 +722,7 @@
           </div>
         </article>
 
-        <article class="beat" data-s="roof" data-x="764" data-id="contact" data-year="Today" data-c="6" data-ch="Chapter 6 of 6: Today" data-for="brand ai founder">
+        <article class="beat" data-s="roof" data-x="764" data-id="contact" data-quest="Email, résumé, LinkedIn" data-year="Today" data-c="6" data-ch="Chapter 6 of 6: Today" data-for="brand ai founder">
           <div class="say">
             <h2>This is 5% of what I want to do. Help me find the other 95%.</h2>
             <p class="story">The email is already written for you. A 20-minute call is usually enough to see if there is a fit.</p>
@@ -742,6 +746,7 @@
             <span class="count px" id="count"></span>
           </div>
           <div class="nav-keys">
+            <button class="btn btn-ghost px quest-btn story-only" id="quest-btn" type="button" aria-expanded="false">Quest log ▴</button>
             <button class="btn btn-ghost px" id="prev" type="button" aria-label="Back">◀</button>
             <button class="btn btn-gold px" id="next" type="button">Start walking ▶</button>
           </div>
