@@ -14,7 +14,7 @@ const NIGHT = ['#0d0f2c', '#181a46', '#2a2d66', '#40458a'];
 
 export function floor() {
   const r = rng(2019), PX0 = -340, LH = 180, B = 134, F = 160;
-  const play = mk(2220, LH), x = play.x, c = (wx) => wx - PX0, lights = [], hot = [], live = {};
+  const play = mk(2920, LH), x = play.x, c = (wx) => wx - PX0, lights = [], hot = [], live = {};
   [-280, -170, -60, 296, 506, 716, 926, 1136, 1346, 1560, 1680].forEach((wx, i) => gulmohar(x, c(wx), B, 26 + (i % 3) * 6, r));
   R(x, '#d9d2c4', c(-340), B - 20, 360, 20); R(x, '#f0ebe0', c(-340), B - 20, 360, 1); R(x, '#a8a091', c(-340), B - 3, 360, 3);
   [26, 72].forEach((wx) => { R(x, '#b8ae9c', c(wx), B - 44, 9, 44); R(x, '#d6ccba', c(wx), B - 44, 9, 1); R(x, '#8f8676', c(wx), B - 44, 2, 44); });
@@ -109,8 +109,8 @@ export function floor() {
   }
   [286, 706, 1126, 1520].forEach((wx) => { const l = lamp(x, c(wx), B, 60); lights.push({ x: l.x + PX0, y: l.y, g: 'warm' }); });
   [[300, '#41a6f6'], [912, '#ef7d57'], [1340, '#a7f070']].forEach(([wx, col]) => scooter(x, c(wx), B, col));
-  for (let wx = 1510; wx < 1900; wx += 12) R(x, '#243a4a', c(wx), B - 10, 2, 10);
-  R(x, '#243a4a', c(1510), B - 10, 390, 1); R(x, '#3c5a6e', c(1510), B - 11, 390, 1);
+  for (let wx = 1510; wx < 2570; wx += 12) R(x, '#243a4a', c(wx), B - 10, 2, 10);
+  R(x, '#243a4a', c(1510), B - 10, 1060, 1); R(x, '#3c5a6e', c(1510), B - 11, 1060, 1);
   { // The cutting-chai cycle: half a glass of tea, the fuel of every Pune office.
     const X = c(1590);
     disc(x, '#181425', X + 4, B - 5, 5); disc(x, '#5a6988', X + 4, B - 5, 4); disc(x, '#181425', X + 4, B - 5, 3);

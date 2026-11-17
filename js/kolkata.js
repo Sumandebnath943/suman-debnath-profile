@@ -36,7 +36,7 @@ export function kolkata() {
   // The street the story happens on. It starts well left of the first beat, so the road always
   // reaches the left edge of the screen, however wide the screen is.
   const PX0 = -460, LH = 180, B = 134, F = 160;
-  const play = mk(1900, LH), x = play.x, c = (wx) => wx - PX0;
+  const play = mk(2600, LH), x = play.x, c = (wx) => wx - PX0;
   const lights = [], hot = [];
 
   // West end of the street: a second stretch of old wall, and a hand-pulled rickshaw waiting for a fare.
@@ -217,8 +217,8 @@ export function kolkata() {
   }
 
   // The road out of town.
-  for (let wx = 1010; wx < 1440; wx += 12) R(x, '#243a4a', c(wx), B - 10, 2, 10);
-  R(x, '#243a4a', c(1010), B - 10, 430, 1); R(x, '#3c5a6e', c(1010), B - 11, 430, 1); R(x, '#243a4a', c(1010), B - 5, 430, 1);
+  for (let wx = 1010; wx < 2130; wx += 12) R(x, '#243a4a', c(wx), B - 10, 2, 10);
+  R(x, '#243a4a', c(1010), B - 10, 1120, 1); R(x, '#3c5a6e', c(1010), B - 11, 1120, 1); R(x, '#243a4a', c(1010), B - 5, 1120, 1);
   {
     const X = c(1078);
     R(x, '#5a6988', X + 21, B - 48, 2, 48); R(x, '#8b9bb4', X + 22, B - 48, 1, 48);

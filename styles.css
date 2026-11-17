@@ -53,15 +53,20 @@ a { color: inherit; }
 .crest-wrap { position: relative; display: inline-grid; place-items: center; }
 .crest { display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
 .crest-script {
-  position: absolute; left: 50%; top: 41%; transform: translate(-50%, -50%) rotate(-6deg); padding: 0 4px 3px;
-  font: 400 15px/1 var(--script); color: #fff; white-space: nowrap; pointer-events: none;
+  position: absolute; left: 50%; top: 43%; transform: translate(-50%, -50%) rotate(-6deg); padding: 0 4px 3px;
+  font: 400 20px/1 var(--script); color: #fff; white-space: nowrap; pointer-events: none;
   text-shadow: 2px 2px 0 var(--coral), -1px -1px 0 var(--ink), 1px 1px 0 var(--ink), 1px -1px 0 var(--ink), -1px 1px 0 var(--ink);
 }
 .crest-big .crest-script { font-size: 58px; text-shadow: 4px 4px 0 var(--coral), -2px -2px 0 var(--ink), 2px 2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink); }
 .crest-fallback { display: none; font-size: 22px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; }
 .no-js .crest-wrap { display: none; }
 .no-js .crest-fallback { display: inline; }
-.hud-brand { justify-self: start; display: flex; align-items: center; padding: 4px 22px 4px 10px; text-decoration: none; }
+/* The logo is a badge on its own patch, hanging a little below the top bar. */
+.hud-brand {
+  justify-self: start; align-self: start; display: flex; align-items: center; padding: 9px 12px 10px; text-decoration: none;
+  background: #241c40; box-shadow: 0 0 0 3px var(--ink), 0 0 0 5px var(--gold), 0 0 0 7px var(--ink), 6px 6px 0 7px rgba(0, 0, 0, 0.35);
+  margin-top: 7px;
+}
 .hud-brand:hover .crest, .hud-brand:focus-visible .crest { filter: brightness(1.12); }
 .hud-brand:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 
@@ -152,10 +157,10 @@ a { color: inherit; }
   box-shadow: 0 0 0 3px var(--ink), 0 0 0 6px var(--line), 7px 7px 0 6px rgba(0, 0, 0, 0.35);
   --pf: clamp(104px, 9vw, 132px);
 }
-.say .pf {                                          /* Suman's portrait, from his sprite for that year */
+.say .pf {                                          /* Suman's photo, in a pixel frame */
   position: absolute; left: 16px; bottom: 14px; top: 22px; width: var(--pf);
-  background: var(--pf-img, none) center bottom / 100% auto no-repeat, linear-gradient(#5b3f87, #e2766a 60%, #ffd28a);
-  image-rendering: pixelated; box-shadow: 0 0 0 3px var(--ink);
+  background: #1d1838 url(images/suman-portrait.webp) center 18% / cover no-repeat;
+  box-shadow: 0 0 0 3px var(--ink), 0 0 0 5px var(--gold), 0 0 0 7px var(--ink);
 }
 .say .name {                                        /* the slanted name tag */
   position: absolute; left: calc(var(--pf) + 24px); top: 0; transform: translateY(-50%) skewX(-12deg);
@@ -292,9 +297,8 @@ a { color: inherit; }
   .stat-year, .stat-lv, .stat small, .stat .of, .hud-icon, .long { display: none; }
   .stat { font-size: 17px; padding: 0 8px; gap: 5px; }
   .short { display: inline; }
-  .hud-brand { padding: 2px 6px 2px 0; }
-  .hud-brand .crest { width: 62px !important; height: auto !important; }
-  .hud-brand .crest-script { font-size: 12px; }
+  .hud-brand { padding: 6px 8px 7px; margin-top: 5px; }
+  .hud-brand .crest-script { font-size: 14px; }
   .coin-dot, .ev-dot { width: 9px; height: 9px; }
   .hud-actions { gap: 6px; }
   .hud-btn { font-size: 16px; height: 30px; padding: 0 8px 2px; }

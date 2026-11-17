@@ -34,7 +34,7 @@ export function dungeon() {
     seg(mx, '#141230', X + 80, 14, X + 80, 60 + r() * 30, 1); R(mx, '#3a3560', X + 78, 62, 5, 4);
   }
 
-  const play = mk(2280, LH), x = play.x, c = (wx) => wx - PX0, lights = [], hot = [], flames = [], live = {};
+  const play = mk(2980, LH), x = play.x, c = (wx) => wx - PX0, lights = [], hot = [], flames = [], live = {};
   // Brick wall.
   R(x, STONE.b, 0, TOP, play.w, B - TOP);
   for (let y = TOP, j = 0; y < B; y += 8, j++) {
@@ -45,7 +45,7 @@ export function dungeon() {
   for (let X = 0; X < play.w; X += 12) R(x, STONE.m, X, TOP - 10, 6, 4);
   R(x, STONE.m, 0, B - 4, play.w, 4);
   // Pillars and torches between the rooms.
-  for (let wx = -230; wx < 1800; wx += 210) {
+  for (let wx = -230; wx < 2500; wx += 210) {
     const X = c(wx);
     R(x, STONE.d, X - 2, TOP - 4, 22, B - TOP + 4); R(x, STONE.l, X, TOP - 4, 16, B - TOP + 4); R(x, '#5c568c', X, TOP - 4, 2, B - TOP + 4); R(x, STONE.b, X + 11, TOP - 4, 5, B - TOP + 4);
     R(x, STONE.l, X - 4, TOP - 8, 24, 5); R(x, STONE.l, X - 4, B - 6, 24, 6); R(x, STONE.d, X - 4, B - 1, 24, 1);

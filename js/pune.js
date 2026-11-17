@@ -53,7 +53,7 @@ const GOLD = ['#3b4a9a', '#c9739a', '#f7a25a', '#ffe08a'];
 
 export function pune() {
   const r = rng(2016), PX0 = -340, LH = 180, B = 134, F = 160;
-  const play = mk(1850, LH), x = play.x, c = (wx) => wx - PX0;
+  const play = mk(2550, LH), x = play.x, c = (wx) => wx - PX0;
   const lights = [], hot = [];
 
   [-262, -150, 618, 1062, 1150, 1250, 1380].forEach((wx, i) => gulmohar(x, c(wx), B, 30 + (i % 3) * 6, r));
@@ -155,8 +155,8 @@ export function pune() {
   const l2 = lamp(x, c(1028), B, 60); lights.push({ x: l2.x + PX0, y: l2.y, g: 'warm' });
 
   // The way out.
-  for (let wx = 1020; wx < 1510; wx += 12) R(x, '#243a4a', c(wx), B - 10, 2, 10);
-  R(x, '#243a4a', c(1020), B - 10, 490, 1); R(x, '#3c5a6e', c(1020), B - 11, 490, 1); R(x, '#243a4a', c(1020), B - 5, 490, 1);
+  for (let wx = 1020; wx < 2200; wx += 12) R(x, '#243a4a', c(wx), B - 10, 2, 10);
+  R(x, '#243a4a', c(1020), B - 10, 1180, 1); R(x, '#3c5a6e', c(1020), B - 11, 1180, 1); R(x, '#243a4a', c(1020), B - 5, 1180, 1);
   {
     const X = c(1086);
     R(x, '#5a6988', X + 36, B - 48, 2, 48); R(x, '#8b9bb4', X + 37, B - 48, 1, 48);

@@ -141,9 +141,9 @@ export function kerala() {
   for (let X = 10; X < back.w; X += 90 + Math.floor(r() * 80)) tiledHouse(back.x, X, 172, 50 + Math.floor(r() * 26), 36 + Math.floor(r() * 16), r);
   for (let X = 0; X < back.w; X += 26 + Math.floor(r() * 30)) bigPalm(back.x, X, 172, 44 + r() * 30, r);
 
-  const play = mk(1240, LH), x = play.x, c = (wx) => wx - PX0, lights = [], hot = [];
+  const play = mk(1940, LH), x = play.x, c = (wx) => wx - PX0, lights = [], hot = [];
   [-290, -210, -110, -30, 46, 322, 392, 470, 560, 660, 760].forEach((wx) => bigPalm(x, c(wx), B, 62 + r() * 26, r));
-  for (let wx = -340; wx < 900; wx += 5) { const hgt = 4 + r() * 7; R(x, r() < 0.5 ? '#2b7a4a' : '#1c4f38', c(wx), B - hgt, 3, hgt); if (r() < 0.2) R(x, '#f6757a', c(wx) + 1, B - hgt, 1, 1); }
+  for (let wx = -340; wx < 1600; wx += 5) { const hgt = 4 + r() * 7; R(x, r() < 0.5 ? '#2b7a4a' : '#1c4f38', c(wx), B - hgt, 3, hgt); if (r() < 0.2) R(x, '#f6757a', c(wx) + 1, B - hgt, 1, 1); }
   {
     const X = c(104), w = 190, h = 56, rx = X + 34, ry = B - 42, rw = 112, rh = 38;
     R(x, '#efe9dc', X, B - h, w, h); R(x, '#c9c1b0', X, B - h, 2, h); R(x, '#fbf7ee', X + w - 1, B - h, 1, h); R(x, '#b8ae9c', X, B - 2, w, 2);

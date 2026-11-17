@@ -672,18 +672,10 @@ function boot() {
   };
   fitLogo();
   window.addEventListener('resize', fitLogo);
-  // Each speech card gets Suman's portrait, cut from his sprite in the outfit of that year, and a name tag.
-  const PF = {};
-  ['adult', 'teen', 'student'].forEach((v) => {
-    const s = mk(50, 58), c = mk(26, 28);
-    hero(s.x, 25, 51, { variant: v, mode: 'idle', phase: 0, t: 0, facing: 1, blink: false, rim: { color: '#ffd9a8', a: 0.35, dir: 1 } });
-    c.x.drawImage(s.c, -12, -2);
-    PF[v] = c.c.toDataURL();
-  });
+  // Each speech card gets Suman's photo in its portrait frame, and a name tag with the year.
   beats.forEach((b) => {
     const say = b.el.querySelector('.say');
     if (!say) return;
-    say.style.setProperty('--pf-img', `url(${PF[outfit(b.x)]})`);
     say.insertAdjacentHTML('afterbegin', `<span class="pf" aria-hidden="true"></span><span class="name" aria-hidden="true"><span>Suman · ${b.year}</span></span>`);
   });
 
