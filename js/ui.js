@@ -159,6 +159,31 @@ document.addEventListener('click', (e) => {
   else if (t instanceof HTMLDialogElement) t.close();      // a click on the backdrop
 });
 
+/* ───────── full screen ─────────
+   Browsers only allow full screen after the visitor clicks or presses a key, so it is a button (and the F key),
+   never automatic. Phones that do not support it (iPhone) do not see the button. */
+const fsBtn = $('#fs'), root = document.documentElement;
+const canFs = !!(root.requestFullscreen || root.webkitRequestFullscreen) && (document.fullscreenEnabled || document.webkitFullscreenEnabled);
+const fsOn = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+const toggleFs = () => {
+  try {
+    if (fsOn()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else (root.requestFullscreen || root.webkitRequestFullscreen).call(root, { navigationUI: 'hide' });
+  } catch (e) { /* refused by the browser: nothing to do */ }
+};
+if (canFs && fsBtn) {
+  fsBtn.hidden = false;
+  fsBtn.addEventListener('click', toggleFs);
+  const sync = () => { const on = fsOn(); fsBtn.setAttribute('aria-pressed', String(on)); fsBtn.title = on ? 'Leave full screen (F)' : 'Play in full screen (F)'; fsBtn.setAttribute('aria-label', fsBtn.title); };
+  document.addEventListener('fullscreenchange', sync); document.addEventListener('webkitfullscreenchange', sync);
+  window.addEventListener('keydown', (e) => {
+    if (e.code !== 'KeyF' || e.metaKey || e.ctrlKey || e.altKey || document.querySelector('dialog[open]')) return;
+    const el = e.target instanceof Element ? e.target : null;
+    if (el && el.closest('input, textarea, select, [contenteditable]')) return;
+    toggleFs();
+  });
+}
+
 /* ───────── plain-text view ───────── */
 const plainBtn = $('#plain');
 plainBtn.addEventListener('click', () => {
